@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Layout } from "antd";
-import { Logo, MenuList } from "./components";
+import { Logo, MenuList, ToggleThemeButton } from "./components";
 import {
   Authorization,
   MedicalRecords,
@@ -13,12 +13,19 @@ import Test from "./pages/test";
 const { Header, Sider } = Layout;
 
 function App() {
+  const [darkTheme, setDarkTheme] = useState(true);
+  const toggleTheme = () => setDarkTheme(!darkTheme);
+
   return (
     <Router>
       <Layout>
-        <Sider className="h-screen min-w-60">
-          <Logo />
-          <MenuList />
+        <Sider
+          theme={darkTheme ? "dark" : "light"}
+          className="h-screen min-w-60"
+        >
+          <Logo darkTheme={darkTheme} />
+          <MenuList darkTheme={darkTheme} />
+          <ToggleThemeButton darkTheme={darkTheme} toggleTheme={toggleTheme} />
         </Sider>
 
         <Routes>

@@ -8,7 +8,11 @@ import { MdOutlineNotificationsActive } from "react-icons/md";
 import { PiUserCheck, PiTestTubeDuotone } from "react-icons/pi";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
 
-const MenuList = () => {
+interface MenuListProps {
+  darkTheme: boolean;
+}
+
+const MenuList = ({ darkTheme }: MenuListProps) => {
   const navigate = useNavigate();
 
   type CustomIconComponentProps = GetProps<typeof Icon>;
@@ -22,7 +26,10 @@ const MenuList = () => {
   );
 
   return (
-    <Menu theme="dark" className=" mt-1 flex flex-col gap-3 text-lg relative ">
+    <Menu
+      theme={darkTheme ? "dark" : "light"}
+      className=" mt-1 flex flex-col gap-3 text-lg relative "
+    >
       <Menu.Item
         key="dashboard"
         icon={<AiOutlineHome size={18} />}
