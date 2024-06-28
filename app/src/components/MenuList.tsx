@@ -42,7 +42,7 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         icon={<PiUserCheck size={18} />}
         onClick={() => navigate("/authorization")}
       >
-        Authorize Doctor
+        Auth Doctor
       </Menu.Item>
       <Menu.Item
         key="medicalRecord"

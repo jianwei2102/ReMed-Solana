@@ -4,9 +4,10 @@ import type { GetProps } from "antd";
 
 interface LogoProps {
   darkTheme: boolean;
+  collapsed: boolean;
 }
 
-const Logo = ({ darkTheme }: LogoProps) => {
+const Logo = ({ darkTheme, collapsed }: LogoProps) => {
   type CustomIconComponentProps = GetProps<typeof Icon>;
   const EcgSvg = () => (
     <svg
@@ -42,7 +43,11 @@ const Logo = ({ darkTheme }: LogoProps) => {
       }`}
     >
       <EcgIcon color="white" />
-      <div className="pl-1 tracking-widest text-xl">
+      <div
+        className={`pl-1 tracking-widest text-xl ${
+          collapsed ? "hidden" : "block"
+        }`}
+      >
         Re
         <span className="text-[#16D1D1]">Med</span>
       </div>
