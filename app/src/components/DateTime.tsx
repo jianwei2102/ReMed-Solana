@@ -15,11 +15,11 @@ const DateTime = () => {
   }, []);
 
   return (
-    <div className="flex items-center">
+    <div className="basis-4/5 flex items-center">
       <PiCalendarCheck size={15} className="ml-3 mr-1" />
-      {currentDate}
+      <span className="truncate">{currentDate}</span>
       <PiClock size={15} className="ml-3 mr-1" />
-      {currentTime}
+      <span className="truncate">{currentTime}</span>
     </div>
   );
 };

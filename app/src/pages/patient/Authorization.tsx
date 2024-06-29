@@ -1,9 +1,15 @@
-import React from 'react'
+import React from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const Authorization = () => {
-  return (
-    <div>Authorization</div>
-  )
-}
+  const { publicKey } = useWallet();
 
-export default Authorization
+  return (
+    <div>
+      <h2>Wallet Public Key:</h2>
+      <p>{publicKey ? publicKey.toBase58() : "No wallet connected"}</p>
+    </div>
+  );
+};
+
+export default Authorization;

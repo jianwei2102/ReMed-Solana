@@ -25,61 +25,57 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
     <Icon component={EcgSvg} {...props} />
   );
 
+  const items = [
+    {
+      key: "dashboard",
+      icon: <AiOutlineHome size={18} />,
+      label: "Dashboard",
+      onClick: () => navigate("/"),
+    },
+    {
+      key: "authorization",
+      icon: <PiUserCheck size={18} />,
+      label: "Auth Doctor",
+      onClick: () => navigate("/authorization"),
+    },
+    {
+      key: "medicalRecord",
+      icon: <EcgIcon />,
+      label: "Medical Record",
+      onClick: () => navigate("/medical-record"),
+    },
+    {
+      key: "medications",
+      icon: <CgPill size={18} />,
+      label: "Medications",
+      onClick: () => navigate("/medications"),
+    },
+    {
+      key: "labResults",
+      icon: <PiTestTubeDuotone size={18} />,
+      label: "Lab Results",
+      onClick: () => navigate("/labResults"),
+    },
+    {
+      key: "settings",
+      icon: <AiOutlineSetting size={18} />,
+      label: "Settings",
+      onClick: () => navigate("/"),
+    },
+    {
+      key: "notification",
+      icon: <MdOutlineNotificationsActive size={18} />,
+      label: "Notification",
+      onClick: () => navigate("/"),
+    },
+  ];
+
   return (
     <Menu
       theme={darkTheme ? "dark" : "light"}
-      className=" mt-1 flex flex-col gap-3 text-lg relative "
-    >
-      <Menu.Item
-        key="dashboard"
-        icon={<AiOutlineHome size={18} />}
-        onClick={() => navigate("/")}
-      >
-        Dashboard
-      </Menu.Item>
-      <Menu.Item
-        key="authorization"
-        icon={<PiUserCheck size={18} />}
-        onClick={() => navigate("/authorization")}
-      >
-        Auth Doctor
-      </Menu.Item>
-      <Menu.Item
-        key="medicalRecord"
-        icon={<EcgIcon />}
-        onClick={() => navigate("/medical-record")}
-      >
-        Medical Record
-      </Menu.Item>
-      <Menu.Item
-        key="medications"
-        icon={<CgPill size={18} />}
-        onClick={() => navigate("/medications")}
-      >
-        Medications
-      </Menu.Item>
-      <Menu.Item
-        key="labResults"
-        icon={<PiTestTubeDuotone size={18} />}
-        onClick={() => navigate("/labResults")}
-      >
-        Lab Results
-      </Menu.Item>
-      <Menu.Item
-        key="settings"
-        icon={<AiOutlineSetting size={18} />}
-        onClick={() => navigate("/")}
-      >
-        Settings
-      </Menu.Item>
-      <Menu.Item
-        key="notification"
-        icon={<MdOutlineNotificationsActive size={18} />}
-        onClick={() => navigate("/")}
-      >
-        Notification
-      </Menu.Item>
-    </Menu>
+      className="mt-1 flex flex-col gap-3 text-lg relative"
+      items={items}
+    />
   );
 };
 
