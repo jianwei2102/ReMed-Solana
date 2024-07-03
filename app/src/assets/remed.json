@@ -1,0 +1,134 @@
+{
+  "version": "0.1.0",
+  "name": "remed",
+  "instructions": [
+    {
+      "name": "addDoc",
+      "accounts": [
+        {
+          "name": "permissionList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "doc",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "removeDoc",
+      "accounts": [
+        {
+          "name": "permissionList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "doc",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "appendRecord",
+      "accounts": [
+        {
+          "name": "permissionList",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "medicationList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "patient",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "record",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "PermissionList",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authorized",
+            "type": {
+              "vec": "string"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MedicationList",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "medication",
+            "type": {
+              "vec": "string"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Unauthorized signer"
+    }
+  ],
+  "metadata": {
+    "address": "AaD2G2x6dkvNsUaHhKM26XBBVBfb76FsFtaZKtt4dnWj"
+  }
+}

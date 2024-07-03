@@ -58,12 +58,12 @@ function App() {
 
             <Layout>
               <Header
-                className="p-0 flex flex-wrap h-auto items-center justify-between pr-10"
+                className="p-0 flex flex-wrap h-auto items-center justify-between pr-10 gap-4"
                 style={{ background: colorBgContainer }}
               >
                 <Button
                   type="text"
-                  className="ml-4"
+                  className="ml-4 flex-none"
                   icon={
                     collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
                   }

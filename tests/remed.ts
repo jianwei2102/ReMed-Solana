@@ -83,17 +83,17 @@ describe("remed", () => {
   //   console.log("On-chain data is:", permissionAccount.authorized.toString());
   // });
 
-  // it("Display doc", async () => {
-  //   const seeds = [Buffer.from("permission_list"), user1.publicKey.toBuffer()];
-  //   const [permissionsAccount, nonce] = await anchor.web3.PublicKey.findProgramAddress(
-  //     seeds,
-  //     program.programId
-  //   );
+  it("Display doc", async () => {
+    const seeds = [Buffer.from("permission_list"), user1.publicKey.toBuffer()];
+    const [permissionsAccount, nonce] = await anchor.web3.PublicKey.findProgramAddress(
+      seeds,
+      program.programId
+    );
 
-  //   // // Fetch the created account
-  //   const permissionAccount = await program.account.permissionList.fetch(permissionsAccount);
-  //   console.log("On-chain data is:", permissionAccount.authorized.toString());
-  // });
+    // // Fetch the created account
+    const permissionAccount = await program.account.permissionList.fetch(permissionsAccount);
+    console.log("On-chain data is:", permissionAccount.authorized.toString());
+  });
 
   // it("Append record", async () => {
   //   const seeds = [Buffer.from("permission_list"), user1.publicKey.toBuffer()];
@@ -130,15 +130,15 @@ describe("remed", () => {
   //   }
   // });
 
-  it("Display records", async () => {
-    const medicSeeds = [Buffer.from("medication_list1"), user1.publicKey.toBuffer()];
-    const [medicationsAccount, medicNonce] = await anchor.web3.PublicKey.findProgramAddress(
-      medicSeeds,
-      program.programId
-    );
+  // it("Display records", async () => {
+  //   const medicSeeds = [Buffer.from("medication_list1"), user1.publicKey.toBuffer()];
+  //   const [medicationsAccount, medicNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  //     medicSeeds,
+  //     program.programId
+  //   );
 
-    // // Fetch the created account
-    const medicalRecord = await program.account.medicationList.fetch(medicationsAccount);
-    console.log("On-chain data is:", medicalRecord.medication.toString());
-  });
+  //   // // Fetch the created account
+  //   const medicalRecord = await program.account.medicationList.fetch(medicationsAccount);
+  //   console.log("On-chain data is:", medicalRecord.medication.toString());
+  // });
 });
