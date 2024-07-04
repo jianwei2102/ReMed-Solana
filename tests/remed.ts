@@ -10,7 +10,7 @@ describe("remed", () => {
   const program = anchor.workspace.Remed as Program<Remed>;
 
   // PLEASE DON'T HACK ME - 1
-  // user - 7JZKzBpbNAyGWrbpfNs61zZu9RWeUhhCC77UaLWcdocS 
+  // user - 7JZKzBpbNAyGWrbpfNs61zZu9RWeUhhCC77UaLWcdocS
   const secretKeyBytes = [
     69, 44, 51, 26, 12, 165, 235, 38, 77, 18, 86, 53, 244, 9, 197, 45, 191, 99,
     238, 46, 27, 96, 115, 218, 254, 224, 244, 139, 194, 24, 93, 166, 93, 165,
@@ -27,7 +27,13 @@ describe("remed", () => {
     58, 15, 85, 64, 255, 185, 23, 203, 194, 210, 15, 248, 194, 154,
   ];
   const user1 = Keypair.fromSecretKey(Uint8Array.from(secretKeyBytes));
+  const user1_pub = new PublicKey(
+    "7JZKzBpbNAyGWrbpfNs61zZu9RWeUhhCC77UaLWcdocS"
+  );
   const doc1 = Keypair.fromSecretKey(Uint8Array.from(secretKeyBytesDoc));
+  const doc1_pub = new PublicKey(
+    "4GCuAtDNWAJn5LwLJirkfbrvmRZ7ruYdB4ZE5MyWCLG1"
+  );
 
   // it("Is initialized!", async () => {
   //   // Add your test here.
@@ -35,6 +41,37 @@ describe("remed", () => {
   //   console.log("Your transaction signature");
   //   console.log(user1.publicKey.toString());
   // });
+
+  // it("Create Profile", async () => {
+  //   //Profile
+  //   const profileSeeds = [Buffer.from("profile"), user1.publicKey.toBuffer()];
+  //   const [profileAcc] = await anchor.web3.PublicKey.findProgramAddress(
+  //     profileSeeds,
+  //     program.programId
+  //   );
+
+  //   await program.methods
+  //     .createProfile("Patient", "Record")
+  //     .accounts({
+  //       profile: profileAcc,
+  //       signer: user1.publicKey,
+  //       systemProgram: SystemProgram.programId,
+  //     })
+  //     .signers([user1])
+  //     .rpc();
+  // });
+
+  it("Display Profile", async () => {
+    //Profile
+    const profileSeeds = [Buffer.from("profile"), user1.publicKey.toBuffer()];
+    const [profileAcc] = await anchor.web3.PublicKey.findProgramAddress(
+      profileSeeds,
+      program.programId
+    );
+
+    const permissionAccount = await program.account.profile.fetch(profileAcc);
+    console.log("On-chain data is:", permissionAccount);
+  });
 
   // it("Add New Doc!", async () => {
   //   // Generate keypair for the new account
@@ -83,17 +120,17 @@ describe("remed", () => {
   //   console.log("On-chain data is:", permissionAccount.authorized.toString());
   // });
 
-  it("Display doc", async () => {
-    const seeds = [Buffer.from("permission_list"), user1.publicKey.toBuffer()];
-    const [permissionsAccount, nonce] = await anchor.web3.PublicKey.findProgramAddress(
-      seeds,
-      program.programId
-    );
+  // it("Display doc", async () => {
+  //   const seeds = [Buffer.from("permission_list"), user1.publicKey.toBuffer()];
+  //   const [permissionsAccount, nonce] =
+  //     await anchor.web3.PublicKey.findProgramAddress(seeds, program.programId);
 
-    // // Fetch the created account
-    const permissionAccount = await program.account.permissionList.fetch(permissionsAccount);
-    console.log("On-chain data is:", permissionAccount.authorized.toString());
-  });
+  //   // // Fetch the created account
+  //   const permissionAccount = await program.account.permissionList.fetch(
+  //     permissionsAccount
+  //   );
+  //   console.log("On-chain data is:", permissionAccount.authorized.toString());
+  // });
 
   // it("Append record", async () => {
   //   const seeds = [Buffer.from("permission_list"), user1.publicKey.toBuffer()];
