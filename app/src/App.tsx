@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Buffer } from "buffer";
 import { clusterApiUrl } from "@solana/web3.js";
 import { Button, Layout, theme } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
@@ -21,8 +22,10 @@ import {
   LabResults,
 } from "./pages/patient";
 import Test from "./pages/test";
+import HomePage from "./pages/HomePage";
 
 const { Header, Sider, Content } = Layout;
+window.Buffer = Buffer;
 
 function App() {
   const [darkTheme, setDarkTheme] = useState(true);
@@ -76,7 +79,7 @@ function App() {
               <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
                 <div style={{ padding: 24, background: colorBgContainer }}>
                   <Routes>
-                    <Route path="/" element={<div>Dashboard</div>} />
+                    <Route path="/" element={<HomePage />} />
                     <Route path="/authorization" element={<Authorization />} />
                     <Route
                       path="/medical-record"

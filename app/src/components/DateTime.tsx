@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { format } from "date-fns";
+import { format } from 'date-fns';
 import { PiCalendarCheck, PiClock } from "react-icons/pi";
 
 const DateTime = () => {
