@@ -1,13 +1,13 @@
 use anchor_lang::prelude::*;
 
-declare_id!("6cj5nhYA3t9Zz7reUzem68GYJtEvu3Lju3AD7RUFYBKc");
+declare_id!("GfbnjeTJfDv66izF1k1kovjKvjw6t7zqCTb9dRXRYsbC");
 
 #[program]
 pub mod remed {
     use super::*;
 
     pub fn create_profile(
-        ctx: Context<CreatePatient>,
+        ctx: Context<CreateProfile>,
         role: String,
         personal_details: String,
     ) -> Result<()> {
@@ -114,8 +114,8 @@ pub mod remed {
 }
 
 #[derive(Accounts)]
-pub struct CreatePatient<'info> {
-    #[account(init, payer = signer, space = 8 + 20 + 44, seeds = [b"profile", signer.key().as_ref()], bump)]
+pub struct CreateProfile<'info> {
+    #[account(init, payer = signer, space = 8 + 20 + 1024, seeds = [b"profile", signer.key().as_ref()], bump)]
     pub profile: Account<'info, Profile>,
     #[account(mut)]
     pub signer: Signer<'info>,

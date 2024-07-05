@@ -51,7 +51,10 @@ describe("remed", () => {
   //   );
 
   //   await program.methods
-  //     .createProfile("Patient", "Record")
+  //     .createProfile(
+  //       "Patient",
+  //       "U2FsdGVkX18zk0GR77VdQHE6hB9fJWZ94qcpkbureWo8Kk7q3CWwh+HuwdIv3B156BEXjkF5+1Fb6QWQ7LBQQ6LFyTHC1VOAT07aIJygPttZpNl0jTAC8oXexIurg3/mPiYprPtHYFnugdLTrGCC2Obt6DJiHjwq4t6zzyU+cAtd4W+Wi4KAjXQNs1YfOHe8FlAraToXtba3AB30lqVli624qUpvYetfeFpn7FV3/NG4rcI3DWcffR+60dk2EVNuxPwJWzlraiWIauxmHNwScJmq0ehUKd3wAd6w3D1qJ6GEx92vD0PckUf6NO38D5napFT5BPIQ3DJXbZx3JEmmms/4ylXcJcctWXIME3CUEAyeJzKLzwXC7j/SoVxJcuCuUVcRnbbM1CJwDbfsShH+n7x/E0tqtMplJv+sJpZNDUSMYT7wgytIQS70+Ca3Dxw0opHb1A655k47gOb0ObwlGA=="
+  //     )
   //     .accounts({
   //       profile: profileAcc,
   //       signer: user1.publicKey,
@@ -61,43 +64,59 @@ describe("remed", () => {
   //     .rpc();
   // });
 
-  it("Display Profile", async () => {
-    //Profile
-    const profileSeeds = [Buffer.from("profile"), user1.publicKey.toBuffer()];
-    const [profileAcc] = await anchor.web3.PublicKey.findProgramAddress(
-      profileSeeds,
-      program.programId
-    );
-
-    const permissionAccount = await program.account.profile.fetch(profileAcc);
-    console.log("On-chain data is:", permissionAccount);
-  });
-
-  // it("Add New Doc!", async () => {
-  //   // Generate keypair for the new account
-  //   const doc = new Keypair();
-
-  //   const seeds = [Buffer.from("permission_list"), user1.publicKey.toBuffer()];
-  //   const [permissionsAccount, nonce] =
-  //     await anchor.web3.PublicKey.findProgramAddress(seeds, program.programId);
-
-  //   await program.methods
-  //     .addDoc(doc1.publicKey.toString())
-  //     .accounts({
-  //       permissionList: permissionsAccount,
-  //       signer: user1.publicKey,
-  //       systemProgram: SystemProgram.programId,
-  //     })
-  //     .signers([user1])
-  //     .rpc();
-
-  //   console.log(
-  //     `Added doc (${doc.publicKey.toString()}) to the permission list.`
+  // it("Display Profile", async () => {
+  //   //Profile
+  //   const profileSeeds = [Buffer.from("profile"), user1.publicKey.toBuffer()];
+  //   const [profileAcc] = await anchor.web3.PublicKey.findProgramAddress(
+  //     profileSeeds,
+  //     program.programId
   //   );
-  //   // // Fetch the created account
-  //   const permissionAccount = await program.account.permissionList.fetch(permissionsAccount);
-  //   console.log("On-chain data is:", permissionAccount.authorized.toString());
+
+  //   const permissionAccount = await program.account.profile.fetch(profileAcc);
+  //   console.log("On-chain data is:", permissionAccount);
   // });
+
+  it("Add New Doc!", async () => {
+    // Generate keypair for the new account
+    const doc = new Keypair();
+
+    const seeds = [
+      Buffer.from("patient_auth_list"),
+      user1.publicKey.toBuffer(),
+    ];
+    const [patientAuthList, patientNonce] =
+      await anchor.web3.PublicKey.findProgramAddress(seeds, program.programId);
+    const doctorPub = new PublicKey("4GCuAtDNWAJn5LwLJirkfbrvmRZ7ruYdB4ZE5MyWCLG1");
+    const docSeeds = [
+      Buffer.from("doctor_auth_list"),
+      doctorPub.toBuffer(),
+    ];
+    const [doctorAuthList, docNonce] =
+      await anchor.web3.PublicKey.findProgramAddress(
+        docSeeds,
+        program.programId
+      );
+
+    await program.methods
+      .authorizeDoctor(doctorPub.toString())
+      // .revokeDoctor(doc1_pub.toString())
+      // .revokeDoctor("5BkN3HvH4RWamDJ8yanBEyKnVFyqqJeko879nVabbUew")
+      .accounts({
+        patientAuthList: patientAuthList,
+        doctorAuthList: doctorAuthList,
+        signer: user1.publicKey,
+        doctor: doctorPub,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([user1])
+      .rpc();
+
+    // // Fetch the created account
+    const permissionAccount = await program.account.authList.fetch(
+      patientAuthList
+    );
+    console.log("On-chain data is:", permissionAccount.authorized.toString());
+  });
 
   // it("Remove Doc!", async () => {
   //   const seeds = [Buffer.from("permission_list"), user1.publicKey.toBuffer()];
