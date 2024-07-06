@@ -1,11 +1,12 @@
-import { Button } from "antd";
-import { useState, useEffect, useCallback } from "react";
 import { Wallet } from "@project-serum/anchor";
 import { useNavigate } from "react-router-dom";
+import { DoctorAuthorized } from "../../components";
+import { useState, useEffect, useCallback } from "react";
+import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { Button, Divider, Flex, Input, Space, Segmented, Modal } from "antd";
 import {
   authorizeDoctor,
-  revokeDoctor,
   fetchAuthDoctor,
   fetchProfile,
 } from "../../utils/util";
@@ -16,6 +17,10 @@ const Authorization = () => {
   const { connection } = useConnection();
 
   const [authorized, setAuthorized] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
+  const [doctorAddress, setDoctorAddress] = useState("");
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [segmentedValue, setSegmentedValue] = useState<string>("View All");
 
   const getAuthDoctor = useCallback(async () => {
     if (connection && wallet) {
@@ -58,43 +63,73 @@ const Authorization = () => {
     }
   };
 
-  const revokeDoc = async (doctorAddress: string) => {
-    let response = await revokeDoctor(
-      connection,
-      wallet as Wallet,
-      doctorAddress
-    );
-    if (response.status === "success") {
-      setAuthorized((prev) => prev.filter((item) => item !== response.data));
-    }
+  const handleOk = async () => {
+    setConfirmLoading(true);
+    await authorizeDoc(doctorAddress);
+    setDoctorAddress("");
+    setConfirmLoading(false);
+    setOpen(false);
+  };
+
+  const revokeDoctorCallback = (doctorAddress: string) => {
+    setAuthorized((prev) => prev.filter((item) => item !== doctorAddress));
   };
 
   return (
     <div>
-      <h2>Wallet Public Key:</h2>
-      <p>{wallet ? wallet.publicKey.toString() : "No wallet connected"}</p>
-      <Button
-        onClick={() =>
-          authorizeDoc("4GCuAtDNWAJn5LwLJirkfbrvmRZ7ruYdB4ZE5MyWCLG1")
-        }
-      >
-        Add Doc
-      </Button>
-      <Button
-        onClick={() =>
-          revokeDoc("4GCuAtDNWAJn5LwLJirkfbrvmRZ7ruYdB4ZE5MyWCLG1")
-        }
-      >
-        Remove Doc
-      </Button>
-      <div>
-        <h3>Authorized List:</h3>
-        <ul>
-          {authorized.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
+      <Space className="flex justify-between">
+        <Flex vertical>
+          <span className="font-semibold text-xl">Authorized Doctors</span>
+          <span className="text-lg">
+            Ensure your medical records are managed by verified healthcare
+            providers.
+          </span>
+        </Flex>
+
+        <Button type="primary" size="large" onClick={() => setOpen(true)}>
+          + Add New Doctor
+        </Button>
+
+        <Modal
+          title="Enter Doctor's Address"
+          open={open}
+          onOk={handleOk}
+          confirmLoading={confirmLoading}
+          onCancel={() => setOpen(false)}
+        >
+          <Input
+            placeholder="0x...123"
+            value={doctorAddress}
+            onChange={(e) => setDoctorAddress(e.target.value)}
+          />
+        </Modal>
+      </Space>
+
+      <Divider />
+
+      <div className="text-lg font-semibold">
+        All Doctors ({authorized.length})
       </div>
+
+      <Space className="flex justify-between items-center mb-4" size="middle">
+        <Segmented
+          options={["View All", "Authorized", "Pending"]}
+          value={segmentedValue}
+          onChange={setSegmentedValue}
+        />
+
+        <Flex gap="small">
+          <Input placeholder="Search" prefix={<SearchOutlined />} />
+          <Button icon={<FilterOutlined />}>Filter</Button>
+        </Flex>
+      </Space>
+
+      {authorized.map((item) => (
+        <DoctorAuthorized
+          address={item}
+          revokeDoctorCallback={revokeDoctorCallback}
+        />
+      ))}
     </div>
   );
 };
