@@ -16,13 +16,13 @@ import {
   WalletConnect,
 } from "./components";
 import {
+  HomePage,
   Authorization,
   MedicalRecords,
   Medications,
   LabResults,
-} from "./pages/patient";
+} from "./pages";
 import Test from "./pages/test";
-import HomePage from "./pages/HomePage";
 
 const { Header, Sider, Content } = Layout;
 window.Buffer = Buffer;

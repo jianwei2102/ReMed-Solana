@@ -33,7 +33,7 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
   const defaultItem = useMemo(
     () => [
       {
-        key: "dashboard",
+        key: "/",
         icon: <AiOutlineHome size={18} />,
         label: "Homepage",
         onClick: () => navigate("/"),
@@ -55,10 +55,10 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
 
     return [
       {
-        key: "dashboard",
+        key: "/",
         icon: <AiOutlineHome size={18} />,
         label: "Dashboard",
-        onClick: () => navigate("/dashboard"),
+        onClick: () => navigate("/"),
       },
       {
         key: "authorization",
@@ -113,11 +113,14 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
     }
   }, [wallet, connection, defaultItem, patientItems]);
 
+  const defaultSelectedKey = "/";
+
   return (
     <Menu
       theme={darkTheme ? "dark" : "light"}
       className="mt-1 flex flex-col gap-3 text-lg relative"
       items={menuItems}
+      defaultSelectedKeys={[defaultSelectedKey]}
     />
   );
 };
