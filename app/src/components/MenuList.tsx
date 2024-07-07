@@ -70,7 +70,7 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         key: "medicalRecord",
         icon: <EcgIcon />,
         label: "Medical Record",
-        onClick: () => navigate("/medical-record"),
+        onClick: () => navigate("/medicalRecord"),
       },
       {
         key: "medications",

@@ -82,7 +82,7 @@ function App() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/authorization" element={<Authorization />} />
                     <Route
-                      path="/medical-record"
+                      path="/medicalRecord"
                       element={<MedicalRecords />}
                     />
                     <Route path="/medications" element={<Medications />} />

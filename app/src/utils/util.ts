@@ -1,6 +1,6 @@
-import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../assets/remed.json";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
 
 const programID = new PublicKey(idl.metadata.address);
 const CryptoJS = require("crypto-js");
