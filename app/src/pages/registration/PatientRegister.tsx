@@ -1,13 +1,25 @@
-import { Button, Form, Input, Select, DatePicker, Row, Col } from "antd";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { Wallet } from "@project-serum/anchor";
 import { createProfile } from "../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { Wallet } from "@project-serum/anchor";
+import {
+  Button,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Row,
+  Col,
+  message,
+} from "antd";
 
 const PatientRegister = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: any) => {
     const formattedValues = {
@@ -26,17 +38,37 @@ const PatientRegister = () => {
     };
     console.log("Received values of form: ", formattedValues);
 
+    messageApi.open({
+      type: "loading",
+      content: "Transaction in progress..",
+      duration: 0,
+    });
+
     let response = await createProfile(
       connection,
       wallet as Wallet,
       "patient",
       JSON.stringify(formattedValues)
     );
-    console.log(response);
+    
+    messageApi.destroy();
+    if (response.status === "success") {
+      messageApi.open({
+        type: "success",
+        content: "User profile created successfully",
+      });
+      navigate("/doctor/authorization");
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Error creating user profile",
+      });
+    }
   };
 
   return (
     <Form form={form} className="mt-4" layout="vertical" onFinish={onFinish}>
+      {contextHolder}
       <Row gutter={16} className="rounded-md border">
         {/* User (Patient) Information */}
         <Col span={12} className="border-r !pl-4">

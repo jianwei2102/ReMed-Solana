@@ -31,15 +31,6 @@ const createProfile = async (
     ).toString();
     console.log(encryptedPersonalDetails);
 
-    // Decrypt the encrypted message using the same key
-    var decrypted = CryptoJS.AES.decrypt(
-      encryptedPersonalDetails,
-      process.env.REACT_APP_ENCRYPTION_KEY
-    );
-    // // Convert the decrypted message from a CryptoJS object to a regular string
-    var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
-    console.log("Decrypted message: " + plaintext);
-
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
 
@@ -83,6 +74,16 @@ const fetchProfile = async (connection: any, wallet: Wallet) => {
     );
 
     const profileData = await program.account.profile.fetch(profileAccount);
+
+    // Decrypt the encrypted message using the same key
+    var decrypted = CryptoJS.AES.decrypt(
+      profileData.personalDetails,
+      process.env.REACT_APP_ENCRYPTION_KEY
+    );
+    // // Convert the decrypted message from a CryptoJS object to a regular string
+    var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
+    console.log("Decrypted message: " + plaintext);
+
     console.log(profileData);
     return { status: "success", data: profileData };
   } catch (error) {
