@@ -20,7 +20,7 @@ const MedicalRecords = () => {
     if (response.status === "success") {
       const role = (response.data as { role: string }).role;
       if (role === "patient") {
-        // getAuthDoctor();
+        // getMedicalRecords();
       } else if (role === "doctor") {
         navigate("/");
       }
