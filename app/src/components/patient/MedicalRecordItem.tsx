@@ -27,17 +27,22 @@ const items: DescriptionsProps["items"] = [
 const MedicalRecordItem = () => {
   return (
     <div className="border rounded-lg p-4">
-        <Space size={1} direction="vertical">
-          <div>Clinical Visit: Rayon Clinic, 21-02-2024, 12:41 P.M.</div>
-          <div></div>Record Transaction: 0x...34123a
-        </Space>
+      <Space size={2} direction="vertical">
+        <div>
+          <span className="font-semibold">Clinical Visit - </span>
+          Rayon Clinic, 21-02-2024, 12:41 P.M.
+        </div>
+        <div>
+          <span className="font-semibold">Transaction Hash:</span> 0x...34123a
+        </div>
         <Descriptions
-          className="bg-[#D2DDEA] rounded-lg px-4 pt-2"
+          className="bg-[#D2DDEA] rounded-lg px-4 pt-2 mt-2"
           items={items}
           column={1}
         />
-      </div>
-  )
-}
+      </Space>
+    </div>
+  );
+};
 
-export default MedicalRecordItem
+export default MedicalRecordItem;

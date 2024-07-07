@@ -49,7 +49,14 @@ function App() {
               collapsible
               trigger={null}
               theme={darkTheme ? "dark" : "light"}
-              className="h-screen"
+              style={{
+                overflow: "auto",
+                height: "100vh",
+                position: "fixed",
+                left: 0,
+                top: 0,
+                bottom: 0,
+              }}
             >
               <Logo darkTheme={darkTheme} collapsed={collapsed} />
               <MenuList darkTheme={darkTheme} />
@@ -59,7 +66,11 @@ function App() {
               />
             </Sider>
 
-            <Layout>
+            <Layout
+              className={`${
+                collapsed ? "ml-[80px]" : "ml-[200px]"
+              } transition-all duration-200`}
+            >
               <Header
                 className="p-0 flex flex-wrap h-auto items-center justify-between pr-10 gap-4"
                 style={{ background: colorBgContainer }}
@@ -81,10 +92,7 @@ function App() {
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/authorization" element={<Authorization />} />
-                    <Route
-                      path="/medicalRecord"
-                      element={<MedicalRecords />}
-                    />
+                    <Route path="/medicalRecord" element={<MedicalRecords />} />
                     <Route path="/medications" element={<Medications />} />
                     <Route path="/labResults" element={<LabResults />} />
                     <Route path="/test" element={<Test />} />
