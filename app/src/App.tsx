@@ -88,7 +88,10 @@ function App() {
               </Header>
 
               <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
-                <div style={{ padding: 24, background: colorBgContainer }}>
+                <div
+                  className="min-h-[calc(100vh-138px)] overflow-auto"
+                  style={{ padding: 24, background: colorBgContainer }}
+                >
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/authorization" element={<Authorization />} />

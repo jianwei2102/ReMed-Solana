@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import { LabResultItem } from "../../components";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { fetchProfile } from "../../utils/util";
-import { useCallback, useEffect } from "react";
 import { Wallet } from "@project-serum/anchor";
+import { useNavigate } from "react-router-dom";
+import { fetchProfile } from "../../utils/util";
+import { LabResultItem } from "../../components";
+import { useCallback, useEffect } from "react";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
 const LabResults = () => {
   const navigate = useNavigate();

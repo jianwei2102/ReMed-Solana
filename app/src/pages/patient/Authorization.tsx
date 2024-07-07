@@ -124,8 +124,9 @@ const Authorization = () => {
         </Flex>
       </Space>
 
-      {authorized.map((item) => (
+      {authorized.map((item, index) => (
         <DoctorAuthorized
+          key={index}
           address={item}
           revokeDoctorCallback={revokeDoctorCallback}
         />

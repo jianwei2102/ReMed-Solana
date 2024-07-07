@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useMemo } from "react";
 import { Menu } from "antd";
-import { useNavigate } from "react-router-dom";
 import Icon from "@ant-design/icons";
 import type { GetProps } from "antd";
 import { CgPill } from "react-icons/cg";
+import { fetchProfile } from "../utils/util";
+import { Wallet } from "@project-serum/anchor";
+import { useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
 import { MdOutlineNotificationsActive } from "react-icons/md";
 import { PiUserCheck, PiTestTubeDuotone } from "react-icons/pi";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { fetchProfile } from "../utils/util";
-import { Wallet } from "@project-serum/anchor";
 
 interface MenuListProps {
   darkTheme: boolean;
@@ -23,12 +23,12 @@ interface MenuItem {
 }
 
 const MenuList = ({ darkTheme }: MenuListProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-
-  const navigate = useNavigate();
 
   const defaultItem = useMemo(
     () => [
@@ -61,40 +61,40 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         onClick: () => navigate("/"),
       },
       {
-        key: "authorization",
+        key: "/authorization",
         icon: <PiUserCheck size={18} />,
         label: "Auth Doctor",
         onClick: () => navigate("/authorization"),
       },
       {
-        key: "medicalRecord",
+        key: "/medicalRecord",
         icon: <EcgIcon />,
         label: "Medical Record",
         onClick: () => navigate("/medicalRecord"),
       },
       {
-        key: "medications",
+        key: "/medications",
         icon: <CgPill size={18} />,
         label: "Medications",
         onClick: () => navigate("/medications"),
       },
       {
-        key: "labResults",
+        key: "/labResults",
         icon: <PiTestTubeDuotone size={18} />,
         label: "Lab Results",
         onClick: () => navigate("/labResults"),
       },
       {
-        key: "settings",
+        key: "/settings",
         icon: <AiOutlineSetting size={18} />,
         label: "Settings",
-        onClick: () => navigate("/"),
+        onClick: () => navigate("/settings"),
       },
       {
-        key: "notification",
+        key: "/notification",
         icon: <MdOutlineNotificationsActive size={18} />,
         label: "Notification",
-        onClick: () => navigate("/"),
+        onClick: () => navigate("/notification"),
       },
     ];
   }, [navigate]);
@@ -113,14 +113,13 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
     }
   }, [wallet, connection, defaultItem, patientItems]);
 
-  const defaultSelectedKey = "/";
-
   return (
     <Menu
       theme={darkTheme ? "dark" : "light"}
       className="mt-1 flex flex-col gap-3 text-lg relative"
       items={menuItems}
-      defaultSelectedKeys={[defaultSelectedKey]}
+      selectedKeys={[location.pathname]}
+      defaultSelectedKeys={["/"]}
     />
   );
 };

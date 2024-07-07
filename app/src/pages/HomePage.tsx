@@ -34,12 +34,12 @@ const HomePage = () => {
   }, [connection, wallet]);
 
   return (
-    <div>
+    <>
       {page === "Welcoming" && <Welcoming />}
       {page === "Patient" && <PatientDashboard />}
       {page === "Doctor" && <DoctorDashboard />}
       {page === "Register" && <UserRegister />}
-    </div>
+    </>
   );
 };
 
