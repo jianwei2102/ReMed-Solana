@@ -45,7 +45,9 @@ const DoctorRegister = () => {
         type: "success",
         content: "User profile created successfully",
       });
-      navigate("/authorization");
+      setTimeout(() => {
+        navigate("/authorization");  
+      }, 500);
     } else {
       messageApi.open({
         type: "error",

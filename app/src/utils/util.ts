@@ -75,21 +75,22 @@ const fetchProfile = async (connection: any, wallet: Wallet) => {
 
     const profileData = await program.account.profile.fetch(profileAccount);
 
-    // Decrypt the encrypted message using the same key
-    var decrypted = CryptoJS.AES.decrypt(
-      profileData.personalDetails,
-      process.env.REACT_APP_ENCRYPTION_KEY
-    );
-    // // Convert the decrypted message from a CryptoJS object to a regular string
-    var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
-    console.log("Decrypted message: " + plaintext);
-
-    console.log(profileData);
     return { status: "success", data: profileData };
   } catch (error) {
     console.error("Error reading profile:", error);
     return { status: "error", data: error };
   }
+};
+
+const decryptProfile = (encryptedData: string) => {
+  // Decrypt the encrypted message using the same key
+  var decrypted = CryptoJS.AES.decrypt(
+    encryptedData,
+    process.env.REACT_APP_ENCRYPTION_KEY
+  );
+  // // Convert the decrypted message from a CryptoJS object to a regular string
+  var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
+  return plaintext;
 };
 
 const authorizeDoctor = async (
@@ -198,7 +199,6 @@ const fetchAuthDoctor = async (connection: any, wallet: Wallet) => {
     const accountData = await program.account.authList.fetch(patientAuthList);
     console.log(accountData.authorized);
     return { status: "success", data: accountData };
-    //   setAuthorized(accountData.authorized as string[]); // Update the state with the authorized list
   } catch (error) {
     console.error("Error reading doctor:", error);
     return { status: "error", data: error };
@@ -209,6 +209,7 @@ export {
   getProvider,
   createProfile,
   fetchProfile,
+  decryptProfile,
   authorizeDoctor,
   revokeDoctor,
   fetchAuthDoctor,

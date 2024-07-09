@@ -1,8 +1,10 @@
-import { Wallet } from "@project-serum/anchor";
-import { Col, Row, Image, Button } from "antd";
-import { revokeDoctor } from "../../utils/util";
+import { FaStar } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import doctorImage from "../../assets/doctor.png";
+import { Wallet, web3 } from "@project-serum/anchor";
+import { Col, Row, Image, Button, message } from "antd";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { fetchProfile, decryptProfile, revokeDoctor } from "../../utils/util";
 
 interface DoctorAuthorizedProps {
   address: string;
@@ -15,32 +17,77 @@ const DoctorAuthorized = ({
 }: DoctorAuthorizedProps) => {
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [profile, setProfile] = useState<Profile | undefined>();
+
+  interface Profile {
+    specialization: string;
+    medicalLicenseNumber: string;
+    affiliations: string;
+    workHours: string;
+    education: string;
+    experience: string;
+    languagesSpoken: string[];
+    contactInformation: string;
+    fullName: string;
+  }
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const publicKey = new web3.PublicKey(address);
+      const doctorWallet = { publicKey };
+      let response = await fetchProfile(connection, doctorWallet as Wallet);
+      if (response.status === "success") {
+        const decryptedProfile = decryptProfile(
+          (response.data as { personalDetails: string })["personalDetails"]
+        );
+        setProfile(JSON.parse(decryptedProfile));
+      }
+    };
+
+    getProfile();
+  }, [connection, address]);
 
   const revokeDoc = async (doctorAddress: string) => {
+    messageApi.open({
+      type: "loading",
+      content: "Transaction in progress..",
+      duration: 0,
+    });
+
     let response = await revokeDoctor(
       connection,
       wallet as Wallet,
       doctorAddress
     );
+    messageApi.destroy();
+    
     if (response.status === "success") {
       revokeDoctorCallback(doctorAddress);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Error revoking doctor profile",
+      });
     }
   };
 
   return (
     <Row className="border mb-4 py-4 rounded-lg">
+      {contextHolder}
       <Col span={2} className="flex flex-col justify-center items-center">
         <Image width={64} className="rounded-full" src={doctorImage} />
       </Col>
       <Col span={14} className="flex flex-col justify-center items-start">
         <span className="bg-[#CCFCD9] text-[#008124] px-4 rounded-full">
-          Pharmacist
+          {profile?.specialization}
         </span>
-        <span className="font-semibold text-lg">Dr. Rayon Robert</span>
-        Rayon Pharmacy
-        <span>
+        <span className="font-semibold text-lg">{profile?.fullName}</span>
+        {profile?.affiliations}
+        <div className="flex items-center justify-center">
+          <FaStar color="blue" size={12} className="mr-1"/>
           4.5 <span className="text-gray-500">(21)</span>
-        </span>
+        </div>
       </Col>
       <Col span={4} className="flex flex-col justify-center items-center">
         <span className="font-semibold">Requested Date:</span>

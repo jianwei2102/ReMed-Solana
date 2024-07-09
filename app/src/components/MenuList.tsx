@@ -99,19 +99,33 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
     ];
   }, [navigate]);
 
+  const doctorItems = useMemo(
+    () => [
+      {
+        key: "/",
+        icon: <AiOutlineHome size={18} />,
+        label: "Dashboard",
+        onClick: () => navigate("/"),
+      },
+    ],
+    [navigate]
+  );
+
   useEffect(() => {
     if (wallet && connection) {
       fetchProfile(connection, wallet as Wallet).then((data) => {
         if (data.status === "success") {
-          setMenuItems(patientItems);
-        } else {
-          setMenuItems(defaultItem);
+          if ((data.data as { role: string })["role"] === "patient") {
+            setMenuItems(patientItems);
+          } else if ((data.data as { role: string })["role"] === "doctor") {
+            setMenuItems(doctorItems);
+          }
         }
       });
     } else {
       setMenuItems(defaultItem);
     }
-  }, [wallet, connection, defaultItem, patientItems]);
+  }, [wallet, connection, defaultItem, patientItems, doctorItems]);
 
   return (
     <Menu

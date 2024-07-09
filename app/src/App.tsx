@@ -29,8 +29,6 @@ window.Buffer = Buffer;
 
 function App() {
   const [darkTheme, setDarkTheme] = useState(true);
-  const toggleTheme = () => setDarkTheme(!darkTheme);
-
   const [collapsed, setCollapsed] = useState(false);
 
   const {
@@ -62,7 +60,7 @@ function App() {
               <MenuList darkTheme={darkTheme} />
               <ToggleThemeButton
                 darkTheme={darkTheme}
-                toggleTheme={toggleTheme}
+                toggleTheme={() => setDarkTheme(!darkTheme)}
               />
             </Sider>
 

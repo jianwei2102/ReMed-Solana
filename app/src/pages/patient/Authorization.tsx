@@ -4,7 +4,16 @@ import { DoctorAuthorized } from "../../components";
 import { useState, useEffect, useCallback } from "react";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { Button, Divider, Flex, Input, Space, Segmented, Modal } from "antd";
+import {
+  Button,
+  Divider,
+  Flex,
+  Input,
+  Space,
+  Segmented,
+  Modal,
+  message,
+} from "antd";
 import {
   authorizeDoctor,
   fetchAuthDoctor,
@@ -15,10 +24,11 @@ const Authorization = () => {
   const navigate = useNavigate();
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const [authorized, setAuthorized] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [doctorAddress, setDoctorAddress] = useState("");
+  const [authorized, setAuthorized] = useState<string[]>([]);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [segmentedValue, setSegmentedValue] = useState<string>("View All");
 
@@ -53,13 +63,29 @@ const Authorization = () => {
   }, [getProfile]);
 
   const authorizeDoc = async (doctorAddress: string) => {
+    messageApi.open({
+      type: "loading",
+      content: "Transaction in progress..",
+      duration: 0,
+    });
     let response = await authorizeDoctor(
       connection,
       wallet as Wallet,
       doctorAddress
     );
+    messageApi.destroy();
+    
     if (response.status === "success") {
+      messageApi.open({
+        type: "success",
+        content: "Doctor authorized successfully",
+      });
       setAuthorized((prev: string[]) => [...prev, response.data as string]);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Error authorizing doctor",
+      });
     }
   };
 
@@ -73,10 +99,15 @@ const Authorization = () => {
 
   const revokeDoctorCallback = (doctorAddress: string) => {
     setAuthorized((prev) => prev.filter((item) => item !== doctorAddress));
+    messageApi.open({
+      type: "success",
+      content: "Doctor revoked successfully",
+    });
   };
 
   return (
     <div>
+      {contextHolder}
       <Space className="flex justify-between">
         <Flex vertical>
           <span className="font-semibold text-xl">Authorized Doctors</span>
@@ -108,7 +139,7 @@ const Authorization = () => {
       <Divider />
 
       <div className="text-lg font-semibold">
-        All Doctors ({authorized.length})
+        All Doctors ({authorized?.length ?? 0})
       </div>
 
       <Space className="flex justify-between items-center mb-4" size="middle">
@@ -124,7 +155,7 @@ const Authorization = () => {
         </Flex>
       </Space>
 
-      {authorized.map((item, index) => (
+      {authorized?.map((item, index) => (
         <DoctorAuthorized
           key={index}
           address={item}
