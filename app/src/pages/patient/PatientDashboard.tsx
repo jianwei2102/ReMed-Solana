@@ -1,15 +1,46 @@
-import { Button } from "antd";
+import { Button, message } from "antd";
 import { LuPill } from "react-icons/lu";
+import { useEffect, useState } from "react";
+import { Wallet } from "@project-serum/anchor";
 import { useNavigate } from "react-router-dom";
+import { fetchAuthDoctor } from "../../utils/util";
 import { MdOutlinePeopleAlt } from "react-icons/md";
 import img from "../../assets/patientDashboard.png";
 import { AuthorizationCard, MedicationCard } from "../../components/";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+
+interface AuthorizedDoctor {
+  address: string;
+  date: string;
+}
 
 const PatientDashboard = () => {
   const navigate = useNavigate();
+  const wallet = useAnchorWallet();
+  const { connection } = useConnection();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [authorized, setAuthorized] = useState<AuthorizedDoctor[]>([]);
+
+  useEffect(() => {
+    if (connection && wallet) {
+      fetchAuthDoctor(connection, wallet as Wallet).then((response) =>
+        setAuthorized((response.data as { authorized: AuthorizedDoctor[] }).authorized.reverse())
+      );
+    }
+  }, [connection, wallet]);
+
+  const revokeDoctorCallback = (doctorAddress: string) => {
+    setAuthorized((prev) => prev.filter((item) => item.address !== doctorAddress));
+    messageApi.open({
+      type: "success",
+      content: "Doctor revoked successfully",
+    });
+  };
 
   return (
     <div>
+      {contextHolder}
       <div className="flex flex-row justify-between rounded-3xl text-white text-xl bg-[#37CAEC] mb-8">
         <div className="flex flex-col justify-center items-start pl-10 gap-3">
           <div className="font-semibold">Hello, {sessionStorage.getItem("name")}!! 👋</div>
@@ -60,9 +91,15 @@ const PatientDashboard = () => {
             </div>
           </div>
           <div>
-            <AuthorizationCard />
-            <AuthorizationCard />
+            {authorized?.slice(0, 3).map((item, index) => (
+              <AuthorizationCard
+                key={index}
+                doctorDetails={(item as unknown) as { address: string; date: string }}
+                revokeDoctorCallback={revokeDoctorCallback}
+              />
+            ))}
           </div>
+
         </div>
       </div>
     </div>

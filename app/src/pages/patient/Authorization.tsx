@@ -1,9 +1,15 @@
-import { Wallet } from "@project-serum/anchor";
+import { format } from "date-fns/format";
 import { useNavigate } from "react-router-dom";
 import { DoctorAuthorized } from "../../components";
+import { Wallet, web3 } from "@project-serum/anchor";
 import { useState, useEffect, useCallback } from "react";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import {
+  authorizeDoctor,
+  fetchAuthDoctor,
+  fetchProfile,
+} from "../../utils/util";
 import {
   Button,
   Divider,
@@ -14,11 +20,11 @@ import {
   Modal,
   message,
 } from "antd";
-import {
-  authorizeDoctor,
-  fetchAuthDoctor,
-  fetchProfile,
-} from "../../utils/util";
+
+interface AuthorizedDoctor {
+  address: string;
+  date: string;
+}
 
 const Authorization = () => {
   const navigate = useNavigate();
@@ -28,14 +34,14 @@ const Authorization = () => {
 
   const [open, setOpen] = useState(false);
   const [doctorAddress, setDoctorAddress] = useState("");
-  const [authorized, setAuthorized] = useState<string[]>([]);
+  const [authorized, setAuthorized] = useState<AuthorizedDoctor[]>([]);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [segmentedValue, setSegmentedValue] = useState<string>("View All");
 
   const getAuthDoctor = useCallback(async () => {
     if (connection && wallet) {
       let response = await fetchAuthDoctor(connection, wallet as Wallet);
-      setAuthorized((response.data as { authorized: string[] }).authorized);
+      setAuthorized((response.data as { authorized: AuthorizedDoctor[] }).authorized.reverse());
     }
   }, [connection, wallet]);
 
@@ -62,25 +68,67 @@ const Authorization = () => {
     getProfile();
   }, [getProfile]);
 
+  const checkDoctorRole = async (doctorAddress: string) => {
+    try {
+      const publicKey = new web3.PublicKey(doctorAddress);
+      const doctorWallet = { publicKey } as Wallet;
+
+      let response = await fetchProfile(connection, doctorWallet);
+      if (response.status !== "success") {
+        return false;
+      }
+
+      const { role } = response.data as { role: string };
+
+      if (role === "doctor") {
+        console.log(response.data);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Error checking doctor role:", error);
+      return false;
+    }
+  };
+
   const authorizeDoc = async (doctorAddress: string) => {
     messageApi.open({
       type: "loading",
       content: "Transaction in progress..",
       duration: 0,
     });
+
+    let validDoctorAddress = await checkDoctorRole(doctorAddress);
+    if (!validDoctorAddress) {
+      messageApi.destroy();
+      messageApi.open({
+        type: "error",
+        content: "Invalid doctor address",
+      });
+      setConfirmLoading(false);
+      return;
+    }
+
     let response = await authorizeDoctor(
       connection,
       wallet as Wallet,
       doctorAddress
     );
     messageApi.destroy();
-    
+
     if (response.status === "success") {
       messageApi.open({
         type: "success",
         content: "Doctor authorized successfully",
       });
-      setAuthorized((prev: string[]) => [...prev, response.data as string]);
+
+      const newAuthorized: AuthorizedDoctor = {
+        address: doctorAddress,
+        date: format(new Date(), "MMMM d, yyyy"),
+      };
+
+      setAuthorized((prev) => [...prev, newAuthorized]);
     } else {
       messageApi.open({
         type: "error",
@@ -98,7 +146,7 @@ const Authorization = () => {
   };
 
   const revokeDoctorCallback = (doctorAddress: string) => {
-    setAuthorized((prev) => prev.filter((item) => item !== doctorAddress));
+    setAuthorized((prev) => prev.filter((item) => item.address !== doctorAddress));
     messageApi.open({
       type: "success",
       content: "Doctor revoked successfully",

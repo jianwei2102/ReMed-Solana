@@ -107,6 +107,12 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         label: "Dashboard",
         onClick: () => navigate("/"),
       },
+      {
+        key: "/doctor/authorization",
+        icon: <PiUserCheck size={18} />,
+        label: "Authorized",
+        onClick: () => navigate("/doctor/authorization"),
+      },
     ],
     [navigate]
   );
