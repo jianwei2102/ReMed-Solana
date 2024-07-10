@@ -124,9 +124,11 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
           const personalDetails = (data.data as { personalDetails: string })["personalDetails"];
           if ((data.data as { role: string })["role"] === "patient") {
             sessionStorage.setItem("name", JSON.parse(decryptProfile(personalDetails)).patient.name);
+            sessionStorage.setItem("role", "patient");
             setMenuItems(patientItems);
           } else if ((data.data as { role: string })["role"] === "doctor") {
             sessionStorage.setItem("name", JSON.parse(decryptProfile(personalDetails)).fullName);
+            sessionStorage.setItem("role", "doctor");
             setMenuItems(doctorItems);
           }
         }

@@ -16,7 +16,7 @@ interface AuthorizedDoctor {
 
 const PatientDashboard = () => {
   const navigate = useNavigate();
-  const wallet = useAnchorWallet();
+  const wallet = useAnchorWallet() as Wallet;
   const { connection } = useConnection();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -24,8 +24,11 @@ const PatientDashboard = () => {
 
   useEffect(() => {
     if (connection && wallet) {
-      fetchAuthDoctor(connection, wallet as Wallet).then((response) =>
-        setAuthorized((response.data as { authorized: AuthorizedDoctor[] }).authorized.reverse())
+      fetchAuthDoctor(connection, wallet).then((response) => {
+        if (response.status === "success") {
+          setAuthorized((response.data as { authorized: AuthorizedDoctor[] })?.authorized.reverse())
+        }
+      }
       );
     }
   }, [connection, wallet]);
@@ -46,7 +49,7 @@ const PatientDashboard = () => {
           <div className="font-semibold">Hello, {sessionStorage.getItem("name")}!! 👋</div>
           <div>
             Welcome to <span className="font-semibold">ReMed</span>, where you
-            own your Medical Record!
+            have full control over your medical records and enjoy personalized healthcare!
           </div>
         </div>
         <img src={img} className="max-h-40" alt="Dashboard" />
@@ -98,6 +101,8 @@ const PatientDashboard = () => {
                 revokeDoctorCallback={revokeDoctorCallback}
               />
             ))}
+
+            {authorized?.length === 0 && <div className="text-center py-4 text-lg text-gray-500">No authorized doctors</div>}
           </div>
 
         </div>

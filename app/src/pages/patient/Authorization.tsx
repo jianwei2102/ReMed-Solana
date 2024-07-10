@@ -41,7 +41,9 @@ const Authorization = () => {
   const getAuthDoctor = useCallback(async () => {
     if (connection && wallet) {
       let response = await fetchAuthDoctor(connection, wallet as Wallet);
-      setAuthorized((response.data as { authorized: AuthorizedDoctor[] }).authorized.reverse());
+      if (response.status === "success") {
+        setAuthorized((response.data as { authorized: AuthorizedDoctor[] })?.authorized.reverse());
+      }
     }
   }, [connection, wallet]);
 
@@ -210,6 +212,9 @@ const Authorization = () => {
           revokeDoctorCallback={revokeDoctorCallback}
         />
       ))}
+
+      {authorized?.length === 0 && <div className="text-center py-4 text-lg text-gray-500">No authorized doctors</div>}
+
     </div>
   );
 };

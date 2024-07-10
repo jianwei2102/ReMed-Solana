@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("D1BLBXEwHao9stmFfxyMRzgcZFZLv8RuuVp8YJPjPFV9");
+declare_id!("E9DsKE43jPzqBWQ6SiF3GKoDvrj5wwHL7XdTYux1PdWp");
 
 #[program]
 pub mod remed {
@@ -53,6 +53,29 @@ pub mod remed {
         let patient_auth_list = &mut ctx.accounts.patient_auth_list;
         let doctor_auth_list = &mut ctx.accounts.doctor_auth_list;
         let patient_address = ctx.accounts.signer.key().to_string();
+
+        // Verify that the doctor's address is present in the authorized list
+        if !patient_auth_list
+            .authorized
+            .iter()
+            .any(|auth| auth.address == doctor_address)
+        {
+            return Err(ErrorCode::AuthorizationNotExist.into());
+        }
+
+        doctor_auth_list
+            .authorized
+            .retain(|auth| auth.address != patient_address);
+        patient_auth_list
+            .authorized
+            .retain(|auth| auth.address != doctor_address);
+        Ok(())
+    }
+
+    pub fn revoke_patient(ctx: Context<RevokePatient>, patient_address: String) -> Result<()> {
+        let patient_auth_list = &mut ctx.accounts.patient_auth_list;
+        let doctor_auth_list = &mut ctx.accounts.doctor_auth_list;
+        let doctor_address = ctx.accounts.signer.key().to_string();
 
         // Verify that the doctor's address is present in the authorized list
         if !patient_auth_list
@@ -177,6 +200,19 @@ pub struct RevokeDoctor<'info> {
     pub signer: Signer<'info>,
     /// CHECK: This is safe because we are only reading the `doctor` account information, and it is not being mutated.
     pub doctor: AccountInfo<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct RevokePatient<'info> {
+    #[account(mut, seeds = [b"patient_auth_list", patient.key().as_ref()], bump)]
+    pub patient_auth_list: Account<'info, AuthList>,
+    #[account(mut, seeds = [b"doctor_auth_list", signer.key().as_ref()], bump)]
+    pub doctor_auth_list: Account<'info, AuthList>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    /// CHECK: This is safe because we are only reading the `doctor` account information, and it is not being mutated.
+    pub patient: AccountInfo<'info>,
     pub system_program: Program<'info, System>,
 }
 

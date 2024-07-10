@@ -185,7 +185,52 @@ const revokeDoctor = async (
     console.log(`Revoke doc ${doctorAddress} from the permission list.`);
     return { status: "success", data: doctorAddress };
   } catch (error) {
-    console.error("Error adding doctor:", error);
+    console.error("Error revoking doctor:", error);
+    return { status: "error", data: error };
+  }
+};
+
+const revokePatient = async (
+  connection: any,
+  wallet: Wallet,
+  patientAddress: string
+) => {
+  try {
+    const anchorProvider = getProvider(connection, wallet);
+    const program = new Program(idl as Idl, programID, anchorProvider);
+
+    const doctorSeeds = [
+      Buffer.from("doctor_auth_list"),
+      anchorProvider.wallet.publicKey.toBuffer(),
+    ];
+    const [doctorAuthList] = await PublicKey.findProgramAddress(
+      doctorSeeds,
+      program.programId
+    );
+
+    const patientPub = new PublicKey(patientAddress);
+    const patientSeeds = [Buffer.from("patient_auth_list"), patientPub.toBuffer()];
+    const [patientAuthList] = await PublicKey.findProgramAddress(
+      patientSeeds,
+      program.programId
+    );
+
+    await program.methods
+      .revokePatient(patientPub.toString())
+      .accounts({
+        patientAuthList: patientAuthList,
+        doctorAuthList: doctorAuthList,
+        signer: anchorProvider.wallet.publicKey,
+        patient: patientPub,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([])
+      .rpc();
+
+    console.log(`Revoke patient ${patientAddress} from the permission list.`);
+    return { status: "success", data: patientAddress };
+  } catch (error) {
+    console.error("Error revoking patient:", error);
     return { status: "error", data: error };
   }
 };
@@ -208,7 +253,30 @@ const fetchAuthDoctor = async (connection: any, wallet: Wallet) => {
     console.log("Authorized doctors: ", accountData.authorized);
     return { status: "success", data: accountData };
   } catch (error) {
-    console.error("Error reading doctor:", error);
+    console.error("Error reading auth doctor:", error);
+    return { status: "error", data: error };
+  }
+};
+
+const fetchAuthPatient = async (connection: any, wallet: Wallet) => {
+  try {
+    const anchorProvider = getProvider(connection, wallet);
+    const program = new Program(idl as Idl, programID, anchorProvider);
+
+    const doctorSeeds = [
+      Buffer.from("doctor_auth_list"),
+      anchorProvider.wallet.publicKey.toBuffer(),
+    ];
+    const [doctorAuthList] = await PublicKey.findProgramAddress(
+      doctorSeeds,
+      program.programId
+    );
+
+    const accountData = await program.account.authList.fetch(doctorAuthList);
+    console.log("Authorized patient: ", accountData.authorized);
+    return { status: "success", data: accountData };
+  } catch (error) {
+    console.error("Error reading auth patient:", error);
     return { status: "error", data: error };
   }
 };
@@ -221,4 +289,6 @@ export {
   authorizeDoctor,
   revokeDoctor,
   fetchAuthDoctor,
+  fetchAuthPatient,
+  revokePatient,
 };

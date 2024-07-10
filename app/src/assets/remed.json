@@ -109,6 +109,42 @@
       ]
     },
     {
+      "name": "revokePatient",
+      "accounts": [
+        {
+          "name": "patientAuthList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "doctorAuthList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "patient",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "patientAddress",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "appendRecord",
       "accounts": [
         {
@@ -314,6 +350,6 @@
     }
   ],
   "metadata": {
-    "address": "D1BLBXEwHao9stmFfxyMRzgcZFZLv8RuuVp8YJPjPFV9"
+    "address": "E9DsKE43jPzqBWQ6SiF3GKoDvrj5wwHL7XdTYux1PdWp"
   }
 }
