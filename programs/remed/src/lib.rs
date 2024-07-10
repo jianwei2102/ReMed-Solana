@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("GhJFLyXJHuC8rZE5P7RbPzS39UF89k6mwFeBPi7mVeFe");
+declare_id!("D1BLBXEwHao9stmFfxyMRzgcZFZLv8RuuVp8YJPjPFV9");
 
 #[program]
 pub mod remed {
@@ -16,17 +16,36 @@ pub mod remed {
         Ok(())
     }
 
-    pub fn authorize_doctor(ctx: Context<AuthorizeDoctor>, doctor_address: String) -> Result<()> {
+    pub fn authorize_doctor(
+        ctx: Context<AuthorizeDoctor>,
+        doctor_address: String,
+        date: String,
+    ) -> Result<()> {
         let patient_auth_list = &mut ctx.accounts.patient_auth_list;
         let doctor_auth_list = &mut ctx.accounts.doctor_auth_list;
         let patient_address = ctx.accounts.signer.key().to_string();
 
         // Check if the doctor's address already exists in the authorized list
-        if patient_auth_list.authorized.contains(&doctor_address) {
+        if patient_auth_list
+            .authorized
+            .iter()
+            .any(|auth| auth.address == doctor_address)
+        {
             return Err(ErrorCode::AuthorizationExist.into());
         }
-        doctor_auth_list.authorized.push(patient_address);
-        patient_auth_list.authorized.push(doctor_address);
+
+        let new_doctor_auth = Authorization {
+            address: patient_address,
+            date: date.clone(),
+        };
+
+        doctor_auth_list.authorized.push(new_doctor_auth);
+
+        let new_patient_auth = Authorization {
+            address: doctor_address,
+            date: date,
+        };
+        patient_auth_list.authorized.push(new_patient_auth);
         Ok(())
     }
 
@@ -36,15 +55,20 @@ pub mod remed {
         let patient_address = ctx.accounts.signer.key().to_string();
 
         // Verify that the doctor's address is present in the authorized list
-        if !patient_auth_list.authorized.contains(&doctor_address) {
+        if !patient_auth_list
+            .authorized
+            .iter()
+            .any(|auth| auth.address == doctor_address)
+        {
             return Err(ErrorCode::AuthorizationNotExist.into());
         }
+
         doctor_auth_list
             .authorized
-            .retain(|x| x != &patient_address);
+            .retain(|auth| auth.address != patient_address);
         patient_auth_list
             .authorized
-            .retain(|x| x != &doctor_address);
+            .retain(|auth| auth.address != doctor_address);
         Ok(())
     }
 
@@ -55,8 +79,12 @@ pub mod remed {
     ) -> Result<()> {
         let patient_auth_list = &ctx.accounts.patient_auth_list;
         let doctor_address = ctx.accounts.signer.key().to_string();
-        if !patient_auth_list.authorized.contains(&doctor_address) {
-            return Err(ErrorCode::Unauthorized.into());
+        if !patient_auth_list
+            .authorized
+            .iter()
+            .any(|auth| auth.address == doctor_address)
+        {
+            return Err(ErrorCode::AuthorizationNotExist.into());
         }
 
         let medication_list = &mut ctx.accounts.medication_list.medication;
@@ -85,7 +113,11 @@ pub mod remed {
     ) -> Result<()> {
         let patient_auth_list = &ctx.accounts.patient_auth_list;
         let doctor_address = ctx.accounts.signer.key().to_string();
-        if !patient_auth_list.authorized.contains(&doctor_address) {
+        if !patient_auth_list
+            .authorized
+            .iter()
+            .any(|auth| auth.address == doctor_address)
+        {
             return Err(ErrorCode::Unauthorized.into());
         }
 
@@ -124,9 +156,9 @@ pub struct CreateProfile<'info> {
 
 #[derive(Accounts)]
 pub struct AuthorizeDoctor<'info> {
-    #[account(init_if_needed, payer = signer, space = 8 + 44*20, seeds = [b"patient_auth_list", signer.key().as_ref()], bump)]
+    #[account(init_if_needed, payer = signer, space = 8 + 88*20, seeds = [b"patient_auth_list", signer.key().as_ref()], bump)]
     pub patient_auth_list: Account<'info, AuthList>,
-    #[account(init_if_needed, payer = signer, space = 8 + 44*20, seeds = [b"doctor_auth_list", doctor.key().as_ref()], bump)]
+    #[account(init_if_needed, payer = signer, space = 8 + 88*20, seeds = [b"doctor_auth_list", doctor.key().as_ref()], bump)]
     pub doctor_auth_list: Account<'info, AuthList>,
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -180,9 +212,15 @@ pub struct Profile {
     personal_details: String,
 }
 
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+pub struct Authorization {
+    address: String,
+    date: String,
+}
+
 #[account]
 pub struct AuthList {
-    authorized: Vec<String>,
+    authorized: Vec<Authorization>,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]

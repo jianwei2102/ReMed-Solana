@@ -7,12 +7,12 @@ import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { fetchProfile, decryptProfile, revokeDoctor } from "../../utils/util";
 
 interface DoctorAuthorizedProps {
-  address: string;
+  doctorDetails: { address: string, date: string };
   revokeDoctorCallback: (doctorAddress: string) => void;
 }
 
 const DoctorAuthorized = ({
-  address,
+  doctorDetails,
   revokeDoctorCallback,
 }: DoctorAuthorizedProps) => {
   const wallet = useAnchorWallet();
@@ -34,7 +34,7 @@ const DoctorAuthorized = ({
 
   useEffect(() => {
     const getProfile = async () => {
-      const publicKey = new web3.PublicKey(address);
+      const publicKey = new web3.PublicKey(doctorDetails.address);
       const doctorWallet = { publicKey };
       let response = await fetchProfile(connection, doctorWallet as Wallet);
       if (response.status === "success") {
@@ -46,7 +46,7 @@ const DoctorAuthorized = ({
     };
 
     getProfile();
-  }, [connection, address]);
+  }, [connection, doctorDetails]);
 
   const revokeDoc = async (doctorAddress: string) => {
     messageApi.open({
@@ -91,7 +91,7 @@ const DoctorAuthorized = ({
       </Col>
       <Col span={4} className="flex flex-col justify-center items-center">
         <span className="font-semibold">Requested Date:</span>
-        January 14, 2024
+        {doctorDetails.date}
       </Col>
       <Col span={4} className="flex flex-col justify-center items-center">
         <Button
@@ -106,7 +106,7 @@ const DoctorAuthorized = ({
           type="primary"
           danger
           block
-          onClick={() => revokeDoc(address)}
+          onClick={() => revokeDoc(doctorDetails.address)}
         >
           Revoke
         </Button>

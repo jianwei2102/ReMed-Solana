@@ -65,6 +65,10 @@
         {
           "name": "doctorAddress",
           "type": "string"
+        },
+        {
+          "name": "date",
+          "type": "string"
         }
       ]
     },
@@ -214,7 +218,9 @@
           {
             "name": "authorized",
             "type": {
-              "vec": "string"
+              "vec": {
+                "defined": "Authorization"
+              }
             }
           }
         ]
@@ -238,6 +244,22 @@
     }
   ],
   "types": [
+    {
+      "name": "Authorization",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "address",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "type": "string"
+          }
+        ]
+      }
+    },
     {
       "name": "Medication",
       "type": {
@@ -292,6 +314,6 @@
     }
   ],
   "metadata": {
-    "address": "GhJFLyXJHuC8rZE5P7RbPzS39UF89k6mwFeBPi7mVeFe"
+    "address": "D1BLBXEwHao9stmFfxyMRzgcZFZLv8RuuVp8YJPjPFV9"
   }
 }

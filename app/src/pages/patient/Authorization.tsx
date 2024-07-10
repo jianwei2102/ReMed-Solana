@@ -158,7 +158,7 @@ const Authorization = () => {
       {authorized?.map((item, index) => (
         <DoctorAuthorized
           key={index}
-          address={item}
+          doctorDetails={(item as unknown) as { address: string; date: string }}
           revokeDoctorCallback={revokeDoctorCallback}
         />
       ))}

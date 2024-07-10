@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import idl from "../assets/remed.json";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
@@ -25,10 +26,7 @@ const createProfile = async (
 ) => {
   try {
     // Encrypt the message using the key
-    var encryptedPersonalDetails = CryptoJS.AES.encrypt(
-      personalDetails,
-      process.env.REACT_APP_ENCRYPTION_KEY
-    ).toString();
+    const encryptedPersonalDetails = encryptProfile(personalDetails);
     console.log(encryptedPersonalDetails);
 
     const anchorProvider = getProvider(connection, wallet);
@@ -57,6 +55,15 @@ const createProfile = async (
     return { status: "error", data: error };
   }
 };
+
+const encryptProfile = (personalDetails: String) => {
+  // Encrypt the message using the key
+  var encrypted = CryptoJS.AES.encrypt(
+    personalDetails,
+    process.env.REACT_APP_ENCRYPTION_KEY
+  ).toString();
+  return encrypted;
+}
 
 const fetchProfile = async (connection: any, wallet: Wallet) => {
   try {
@@ -99,6 +106,7 @@ const authorizeDoctor = async (
   doctorAddress: string
 ) => {
   try {
+    const todayDate = format(new Date(), 'MMMM d, yyyy');
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
 
@@ -118,7 +126,7 @@ const authorizeDoctor = async (
       program.programId
     );
     await program.methods
-      .authorizeDoctor(doctorPub.toString())
+      .authorizeDoctor(doctorPub.toString(), todayDate)
       .accounts({
         patientAuthList: patientAuthList,
         doctorAuthList: doctorAuthList,
@@ -197,7 +205,7 @@ const fetchAuthDoctor = async (connection: any, wallet: Wallet) => {
     );
 
     const accountData = await program.account.authList.fetch(patientAuthList);
-    console.log(accountData.authorized);
+    console.log("Authorized doctors: ", accountData.authorized);
     return { status: "success", data: accountData };
   } catch (error) {
     console.error("Error reading doctor:", error);

@@ -12,7 +12,7 @@ const PatientDashboard = () => {
     <div>
       <div className="flex flex-row justify-between rounded-3xl text-white text-xl bg-[#37CAEC] mb-8">
         <div className="flex flex-col justify-center items-start pl-10 gap-3">
-          <div className="font-semibold">Hello, Jian Wei!! 👋</div>
+          <div className="font-semibold">Hello, {sessionStorage.getItem("name")}!! 👋</div>
           <div>
             Welcome to <span className="font-semibold">ReMed</span>, where you
             own your Medical Record!
@@ -44,13 +44,13 @@ const PatientDashboard = () => {
 
         <div className="basis-1/2 border rounded-lg p-4">
           <div className="flex flew-col justify-between">
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center h-12">
               <div className="p-2 bg-[#E8EDFF] rounded-full mr-2">
                 <MdOutlinePeopleAlt size="20" color="1F51FF" />
               </div>
               <div className="flex flex-col gap-0">
                 <span className="font-semibold text-xl">Doctor List</span>
-                <span className="text-sm italic">Pending Action</span>
+                {/* <span className="text-sm italic">Pending Action</span> */}
               </div>
             </div>
             <div className="flex justify-center items-center">
