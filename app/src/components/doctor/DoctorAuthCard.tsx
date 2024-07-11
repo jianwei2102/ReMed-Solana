@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Wallet, web3 } from "@project-serum/anchor";
 import { Button, Col, message, Row, Divider, Drawer } from "antd";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { decryptProfile, fetchProfile, revokePatient } from "../../utils/util";
+import { decryptData, fetchProfile, revokePatient } from "../../utils/util";
 
 interface DoctorAuthCardProps {
     patientDetails: { address: string, date: string };
@@ -48,6 +49,7 @@ const DoctorAuthCard = ({
     patientDetails,
     revokePatientCallback,
 }: DoctorAuthCardProps) => {
+    const navigate = useNavigate();
     const { connection } = useConnection();
     const wallet = useAnchorWallet() as Wallet;
     const [messageApi, contextHolder] = message.useMessage();
@@ -69,8 +71,8 @@ const DoctorAuthCard = ({
             const doctorWallet = { publicKey };
             let response = await fetchProfile(connection, doctorWallet as Wallet);
             if (response.status === "success") {
-                const decryptedProfile = decryptProfile(
-                    (response.data as { personalDetails: string })["personalDetails"]
+                const decryptedProfile = decryptData(
+                    (response.data as { personalDetails: string })["personalDetails"], "record"
                 );
                 setProfile(JSON.parse(decryptedProfile));
                 console.log(JSON.parse(decryptedProfile));
@@ -205,6 +207,15 @@ const DoctorAuthCard = ({
                     </Col>
                     <Col span={12}>
                         <DescriptionItem title="Address" content={profile?.nextOfKin.address} />
+                    </Col>
+                </Row>
+                <Divider />
+                <Row className="flex justify-evenly ">
+                    <Col span={12}>
+                        <Button>View Record</Button>
+                    </Col>
+                    <Col span={12}>
+                        <Button onClick={() => navigate('/doctor/medicalRecord')}>Append Record</Button>
                     </Col>
                 </Row>
             </Drawer>

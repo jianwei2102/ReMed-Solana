@@ -26,7 +26,7 @@ const createProfile = async (
 ) => {
   try {
     // Encrypt the message using the key
-    const encryptedPersonalDetails = encryptProfile(personalDetails);
+    const encryptedPersonalDetails = encryptData(personalDetails, "profile");
     console.log(encryptedPersonalDetails);
 
     const anchorProvider = getProvider(connection, wallet);
@@ -56,32 +56,24 @@ const createProfile = async (
   }
 };
 
-const encryptProfile = (personalDetails: String) => {
-  // Encrypt the message using the key
-  var encrypted = CryptoJS.AES.encrypt(
-    personalDetails,
-    process.env.REACT_APP_ENCRYPTION_KEY
-  ).toString();
-  return encrypted;
-}
 
 const fetchProfile = async (connection: any, wallet: Wallet) => {
   try {
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
-
+    
     const profileSeeds = [
       Buffer.from("profile"),
       anchorProvider.wallet.publicKey.toBuffer(),
     ];
-
+    
     const [profileAccount] = await PublicKey.findProgramAddress(
       profileSeeds,
       program.programId
     );
-
+    
     const profileData = await program.account.profile.fetch(profileAccount);
-
+    
     return { status: "success", data: profileData };
   } catch (error) {
     console.error("Error reading profile:", error);
@@ -89,15 +81,40 @@ const fetchProfile = async (connection: any, wallet: Wallet) => {
   }
 };
 
-const decryptProfile = (encryptedData: string) => {
+const encryptData = (data: String, dataType: String) => {
+  // Encrypt the message using the key
+  if (dataType === "profile") {
+    return CryptoJS.AES.encrypt(
+      data,
+      process.env.REACT_APP_ENCRYPTION_KEY
+    ).toString();
+  } else if (dataType === "record") {
+    return CryptoJS.AES.encrypt(
+      data,
+      process.env.REACT_APP_EMR_ENCRYPTION_KEY
+    ).toString();
+  }
+  return "";
+}
+
+const decryptData = (data: String, dataType: String) => {
   // Decrypt the encrypted message using the same key
-  var decrypted = CryptoJS.AES.decrypt(
-    encryptedData,
-    process.env.REACT_APP_ENCRYPTION_KEY
-  );
-  // // Convert the decrypted message from a CryptoJS object to a regular string
-  var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
-  return plaintext;
+  if (dataType === "profile") {
+    let decrypted = CryptoJS.AES.decrypt(
+      data,
+      process.env.REACT_APP_ENCRYPTION_KEY
+    );
+    // Convert the decrypted message from a CryptoJS object to a regular string
+    return decrypted.toString(CryptoJS.enc.Utf8);
+  }
+  else if (dataType === "record") {
+    let decrypted = CryptoJS.AES.decrypt(
+      data,
+      process.env.REACT_APP_EMR_ENCRYPTION_KEY
+    );
+    return decrypted.toString(CryptoJS.enc.Utf8);
+  }
+  return "";
 };
 
 const authorizeDoctor = async (
@@ -281,14 +298,99 @@ const fetchAuthPatient = async (connection: any, wallet: Wallet) => {
   }
 };
 
+const generateHash = (additionalData: String, patientPubKey: String, doctorPubKey: String) => {
+  const combinedString = `${additionalData}-${patientPubKey}-${doctorPubKey}`;
+
+  // Create SHA-256 hash
+  const hash = CryptoJS.SHA256(combinedString).toString(CryptoJS.enc.Hex);
+  return hash;
+}
+
+const appendRecord = async (
+  connection: any,
+  wallet: Wallet,
+  recordHash: string,
+  record: string,
+  patientAddress: string,
+) => {
+  try {
+    console.log(record.toString());
+    const encryptedRecord = encryptData(record, "record");
+
+    const anchorProvider = getProvider(connection, wallet);
+    const program = new Program(idl as Idl, programID, anchorProvider);
+
+    const patientPub = new PublicKey(patientAddress);
+    const patientSeeds = [Buffer.from("patient_auth_list"), patientPub.toBuffer()];
+    const [patientAuthList] = await PublicKey.findProgramAddress(
+      patientSeeds,
+      program.programId
+    );
+
+    const recordSeeds = [
+      Buffer.from("medication_list"),
+      patientPub.toBuffer()
+    ];
+    const [recordList] = await PublicKey.findProgramAddress(
+      recordSeeds,
+      program.programId
+    );
+
+    await program.methods
+      .appendRecord(recordHash, encryptedRecord)
+      .accounts({
+        patientAuthList: patientAuthList,
+        medicationList: recordList,
+        signer: anchorProvider.wallet.publicKey,
+        patient: patientPub,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([])
+      .rpc();
+
+    console.log(`Added record ${recordHash} to the patient ${patientAddress}.`);
+    return { status: "success", data: recordHash };
+  } catch (error) {
+    console.error("Error adding record:", error);
+    return { status: "error", data: error };
+  }
+};
+
+const fetchRecord = async (connection: any, wallet: Wallet) => {
+  try {
+    const anchorProvider = getProvider(connection, wallet);
+    const program = new Program(idl as Idl, programID, anchorProvider);
+
+    const recordSeeds = [
+      Buffer.from("medication_list"),
+      anchorProvider.wallet.publicKey.toBuffer(),
+    ];
+
+    const [recordAccount] = await PublicKey.findProgramAddress(
+      recordSeeds,
+      program.programId
+    );
+
+    const recordData = await program.account.medicationList.fetch(recordAccount);
+
+    return { status: "success", data: recordData };
+  } catch (error) {
+    console.error("Error reading record:", error);
+    return { status: "error", data: error };
+  }
+};
+
 export {
   getProvider,
   createProfile,
   fetchProfile,
-  decryptProfile,
+  decryptData,
   authorizeDoctor,
   revokeDoctor,
   fetchAuthDoctor,
   fetchAuthPatient,
   revokePatient,
+  generateHash,
+  appendRecord,
+  fetchRecord,
 };

@@ -22,6 +22,7 @@ import {
   Medications,
   LabResults,
   DoctorAuthorization,
+  DoctorMedicalRecord,
 } from "./pages";
 import Test from "./pages/test";
 
@@ -66,9 +67,7 @@ function App() {
             </Sider>
 
             <Layout
-              className={`${
-                collapsed ? "ml-[80px]" : "ml-[200px]"
-              } transition-all duration-200`}
+              className={`${collapsed ? "ml-[80px]" : "ml-[200px]"} transition-all duration-200`}
             >
               <Header
                 className="p-0 flex flex-wrap h-auto items-center justify-between pr-10 gap-4"
@@ -99,6 +98,7 @@ function App() {
                     <Route path="/labResults" element={<LabResults />} />
                     <Route path="/test" element={<Test />} />
                     <Route path="/doctor/authorization" element={<DoctorAuthorization />} />
+                    <Route path="/doctor/medicalRecord" element={<DoctorMedicalRecord />} />
                   </Routes>
                 </div>
               </Content>

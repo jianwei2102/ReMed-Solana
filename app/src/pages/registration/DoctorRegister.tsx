@@ -46,7 +46,7 @@ const DoctorRegister = () => {
         content: "User profile created successfully",
       });
       setTimeout(() => {
-        navigate("/authorization");  
+        navigate("/authorization");
       }, 500);
     } else {
       messageApi.open({
@@ -228,11 +228,10 @@ const DoctorRegister = () => {
               },
             ]}
           >
-            <Select
-              mode="tags"
+           <Select
+               mode="tags"
               style={{ width: "95%" }}
               placeholder="Type or select languages spoken"
-              // onChange={handleChange}
               options={[
                 { value: "English", label: "English" },
                 { value: "Spanish", label: "Spanish" },
