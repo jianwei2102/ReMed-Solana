@@ -101,7 +101,6 @@ const DoctorDashboard = () => {
 
           {authorized?.length === 0 && <div className="text-center py-4 text-lg text-gray-500">No patients authorized yet</div>}
         </div>
-
       </div>
     </div>
   </div>;
