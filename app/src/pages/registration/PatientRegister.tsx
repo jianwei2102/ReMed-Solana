@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { FaInfo } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { Wallet } from "@project-serum/anchor";
 import { createProfile } from "../../utils/util";
@@ -12,14 +13,44 @@ import {
   Row,
   Col,
   message,
+  Image,
+  Avatar,
+  Tooltip,
 } from "antd";
+import { useState } from "react";
+import { useStorageUpload } from "@thirdweb-dev/react";
 
 const PatientRegister = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
+  const { mutateAsync: upload } = useStorageUpload();
   const [messageApi, contextHolder] = message.useMessage();
+
+  const [patientFile, setPatientFile] = useState<File | undefined>();
+  const [nokFile, setNokFile] = useState<File | undefined>();
+  const [patientFileUrl, setPatientFileUrl] = useState<string | undefined>();
+  const [nokFileUrl, setNokFileUrl] = useState<string | undefined>();
+
+  const uploadToIpfs = async (file: File) => {
+    try {
+      const uploadUrl = await upload({
+        data: [file],
+        options: {
+          uploadWithoutDirectory: true,
+          uploadWithGatewayUrl: true,
+        },
+      });
+
+      const cid = uploadUrl[0].split("/ipfs/")[1].split("/")[0];
+      console.log("IPFS CID:", cid);
+      return cid;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+    }
+  };
 
   const onFinish = async (values: any) => {
     const formattedValues = {
@@ -36,8 +67,30 @@ const PatientRegister = () => {
         ),
       },
     };
-    console.log("Received values of form: ", formattedValues);
 
+    try {
+      messageApi.open({
+        type: "loading",
+        content: "Uploading image file(s) to IPFS..",
+        duration: 0,
+      });
+
+      if (patientFile) {
+        const patientCid = await uploadToIpfs(patientFile);
+        formattedValues.patient.image = patientCid; // Replace image with CID
+      }
+
+      if (nokFile) {
+        const nokCid = await uploadToIpfs(nokFile);
+        formattedValues.nextOfKin.image = nokCid; // Replace image with CID
+      }
+
+      messageApi.destroy();
+      console.log("Received values of form: ", formattedValues);
+    } catch (error) {
+      console.error("Error uploading file(s) to IPFS:", error);
+    }
+    
     messageApi.open({
       type: "loading",
       content: "Transaction in progress..",
@@ -50,14 +103,14 @@ const PatientRegister = () => {
       "patient",
       JSON.stringify(formattedValues)
     );
-    
+
     messageApi.destroy();
     if (response.status === "success") {
       messageApi.open({
         type: "success",
         content: "User profile created successfully",
       });
-      setTimeout(() => { 
+      setTimeout(() => {
         navigate("/doctor/authorization");
       }, 500);
     } else {
@@ -161,6 +214,43 @@ const PatientRegister = () => {
               style={{ width: "95%" }}
             />
           </Form.Item>
+          <Form.Item
+            name={["patient", "image"]} // Nested field for patient image
+            label={
+              <span className="flex justify-center items-center">
+                Profile Image
+                <Tooltip title="Image will be uploaded to IPFS">
+                  <Avatar
+                    size={20}
+                    className="bg-blue-300 ml-1"
+                    icon={<FaInfo />}
+                  />
+                </Tooltip>
+              </span>
+            }
+          >
+            <Row className="flex justify-center items-center">
+              <Col span={18}>
+                <Input
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setPatientFile(e.target.files[0]);
+                      setPatientFileUrl(URL.createObjectURL(e.target.files[0]));
+                    }
+                  }}
+                />
+              </Col>
+              <Col span={6} className="pl-2">
+                {patientFileUrl && (
+                  <Avatar
+                    size={48}
+                    icon={<Image src={patientFileUrl} alt="img" />}
+                  />
+                )}
+              </Col>
+            </Row>
+          </Form.Item>
         </Col>
 
         {/* Next of Kin Information */}
@@ -184,16 +274,6 @@ const PatientRegister = () => {
             <Input placeholder="Fave Robinson" style={{ width: "95%" }} />
           </Form.Item>
           <Form.Item
-            name={["nextOfKin", "relationship"]} // Nested field for next of kin relationship
-            label="Relationship"
-            required
-            rules={[
-              { required: true, message: "Please input the relationship!" },
-            ]}
-          >
-            <Input placeholder="Spouse" style={{ width: "95%" }} />
-          </Form.Item>
-          <Form.Item
             name={["nextOfKin", "gender"]} // Nested field for next of kin gender
             label="Gender"
             required
@@ -207,6 +287,23 @@ const PatientRegister = () => {
             <Select placeholder="Select Gender" style={{ width: "95%" }}>
               <Select.Option value="Male">Male</Select.Option>
               <Select.Option value="Female">Female</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name={["nextOfKin", "relationship"]} // Nested field for next of kin relationship
+            label="Relationship"
+            required
+            rules={[
+              { required: true, message: "Please select the relationship!" },
+            ]}
+          >
+            <Select placeholder="Select Relationship" style={{ width: "95%" }}>
+              <Select.Option value="Spouse">Spouse</Select.Option>
+              <Select.Option value="Parent">Parent</Select.Option>
+              <Select.Option value="Sibling">Sibling</Select.Option>
+              <Select.Option value="Child">Child</Select.Option>
+              <Select.Option value="Friend">Friend</Select.Option>
+              <Select.Option value="Other">Other</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item
@@ -250,6 +347,43 @@ const PatientRegister = () => {
               placeholder="No 1, Jalan Utama, Selangor"
               style={{ width: "95%" }}
             />
+          </Form.Item>
+          <Form.Item
+            name={["nextOfKin", "image"]} // Nested field for next of kin image
+            label={
+              <span className="flex justify-center items-center">
+                Profile Image
+                <Tooltip title="Image will be uploaded to IPFS">
+                  <Avatar
+                    size={20}
+                    className="bg-blue-300 ml-1"
+                    icon={<FaInfo />}
+                  />
+                </Tooltip>
+              </span>
+            }
+          >
+            <Row className="flex justify-center items-center">
+              <Col span={18}>
+                <Input
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setNokFile(e.target.files[0]);
+                      setNokFileUrl(URL.createObjectURL(e.target.files[0]));
+                    }
+                  }}
+                />
+              </Col>
+              <Col span={6} className="pl-2">
+                {nokFileUrl && (
+                  <Avatar
+                    size={48}
+                    icon={<Image src={nokFileUrl} alt="img" />}
+                  />
+                )}
+              </Col>
+            </Row>
           </Form.Item>
         </Col>
       </Row>

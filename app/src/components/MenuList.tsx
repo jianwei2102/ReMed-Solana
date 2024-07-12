@@ -3,9 +3,9 @@ import Icon from "@ant-design/icons";
 import type { GetProps } from "antd";
 import { CgPill } from "react-icons/cg";
 import { Wallet } from "@project-serum/anchor";
+import { fetchProfile, decryptData } from "../utils/util";
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState, useMemo } from "react";
-import { decryptProfile, fetchProfile } from "../utils/util";
 import { MdOutlineNotificationsActive } from "react-icons/md";
 import { PiUserCheck, PiTestTubeDuotone } from "react-icons/pi";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
@@ -123,11 +123,11 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         if (data.status === "success") {
           const personalDetails = (data.data as { personalDetails: string })["personalDetails"];
           if ((data.data as { role: string })["role"] === "patient") {
-            sessionStorage.setItem("name", JSON.parse(decryptProfile(personalDetails)).patient.name);
+            sessionStorage.setItem("name", JSON.parse(decryptData(personalDetails, "profile")).patient.name);
             sessionStorage.setItem("role", "patient");
             setMenuItems(patientItems);
           } else if ((data.data as { role: string })["role"] === "doctor") {
-            sessionStorage.setItem("name", JSON.parse(decryptProfile(personalDetails)).fullName);
+            sessionStorage.setItem("name", JSON.parse(decryptData(personalDetails, "profile")).fullName);
             sessionStorage.setItem("role", "doctor");
             setMenuItems(doctorItems);
           }

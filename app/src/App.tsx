@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Buffer } from "buffer";
-import { clusterApiUrl } from "@solana/web3.js";
 import { Button, Layout, theme } from "antd";
+import { clusterApiUrl } from "@solana/web3.js";
+import { ThirdwebProvider } from "@thirdweb-dev/react";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {
@@ -40,73 +41,87 @@ function App() {
   const endpoint = clusterApiUrl("devnet");
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={[]}>
-        <Router>
-          <Layout>
-            <Sider
-              collapsed={collapsed}
-              collapsible
-              trigger={null}
-              theme={darkTheme ? "dark" : "light"}
-              style={{
-                overflow: "auto",
-                height: "100vh",
-                position: "fixed",
-                left: 0,
-                top: 0,
-                bottom: 0,
-              }}
-            >
-              <Logo darkTheme={darkTheme} collapsed={collapsed} />
-              <MenuList darkTheme={darkTheme} />
-              <ToggleThemeButton
-                darkTheme={darkTheme}
-                toggleTheme={() => setDarkTheme(!darkTheme)}
-              />
-            </Sider>
-
-            <Layout
-              className={`${collapsed ? "ml-[80px]" : "ml-[200px]"} transition-all duration-200`}
-            >
-              <Header
-                className="p-0 flex flex-wrap h-auto items-center justify-between pr-10 gap-4"
-                style={{ background: colorBgContainer }}
+    <ThirdwebProvider clientId={process.env.REACT_APP_ThirdWeb_Client_ID}>
+      <ConnectionProvider endpoint={endpoint}>
+        <WalletProvider wallets={[]}>
+          <Router>
+            <Layout>
+              <Sider
+                collapsed={collapsed}
+                collapsible
+                trigger={null}
+                theme={darkTheme ? "dark" : "light"}
+                style={{
+                  overflow: "auto",
+                  height: "100vh",
+                  position: "fixed",
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                }}
               >
-                <Button
-                  type="text"
-                  className="ml-4 flex-none"
-                  icon={
-                    collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
-                  }
-                  onClick={() => setCollapsed(!collapsed)}
+                <Logo darkTheme={darkTheme} collapsed={collapsed} />
+                <MenuList darkTheme={darkTheme} />
+                <ToggleThemeButton
+                  darkTheme={darkTheme}
+                  toggleTheme={() => setDarkTheme(!darkTheme)}
                 />
-                <DateTime />
-                <WalletConnect />
-              </Header>
+              </Sider>
 
-              <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
-                <div
-                  className="min-h-[calc(100vh-138px)] overflow-auto"
-                  style={{ padding: 24, background: colorBgContainer }}
+              <Layout
+                className={`${collapsed ? "ml-[80px]" : "ml-[200px]"} transition-all duration-200`}
+              >
+                <Header
+                  className="p-0 flex flex-wrap h-auto items-center justify-between pr-10 gap-4"
+                  style={{ background: colorBgContainer }}
                 >
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/authorization" element={<Authorization />} />
-                    <Route path="/medicalRecord" element={<MedicalRecords />} />
-                    <Route path="/medications" element={<Medications />} />
-                    <Route path="/labResults" element={<LabResults />} />
-                    <Route path="/test" element={<Test />} />
-                    <Route path="/doctor/authorization" element={<DoctorAuthorization />} />
-                    <Route path="/doctor/medicalRecord" element={<DoctorMedicalRecord />} />
-                  </Routes>
-                </div>
-              </Content>
+                  <Button
+                    type="text"
+                    className="ml-4 flex-none"
+                    icon={
+                      collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
+                    }
+                    onClick={() => setCollapsed(!collapsed)}
+                  />
+                  <DateTime />
+                  <WalletConnect />
+                </Header>
+
+                <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
+                  <div
+                    className="min-h-[calc(100vh-138px)] overflow-auto"
+                    style={{ padding: 24, background: colorBgContainer }}
+                  >
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route
+                        path="/authorization"
+                        element={<Authorization />}
+                      />
+                      <Route
+                        path="/medicalRecord"
+                        element={<MedicalRecords />}
+                      />
+                      <Route path="/medications" element={<Medications />} />
+                      <Route path="/labResults" element={<LabResults />} />
+                      <Route path="/test" element={<Test />} />
+                      <Route
+                        path="/doctor/authorization"
+                        element={<DoctorAuthorization />}
+                      />
+                      <Route
+                        path="/doctor/medicalRecord"
+                        element={<DoctorMedicalRecord />}
+                      />
+                    </Routes>
+                  </div>
+                </Content>
+              </Layout>
             </Layout>
-          </Layout>
-        </Router>
-      </WalletProvider>
-    </ConnectionProvider>
+          </Router>
+        </WalletProvider>
+      </ConnectionProvider>
+    </ThirdwebProvider>
   );
 }
 

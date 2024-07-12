@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Wallet, web3 } from "@project-serum/anchor";
 import { Col, Row, Button, message, Drawer, Divider } from "antd";
+import { decryptData, fetchProfile, revokeDoctor } from "../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { decryptProfile, fetchProfile, revokeDoctor } from "../../utils/util";
 
 interface AuthorizationCardProps {
   doctorDetails: { address: string, date: string };
@@ -58,8 +58,8 @@ const AuthorizationCard = ({
       const doctorWallet = { publicKey };
       let response = await fetchProfile(connection, doctorWallet as Wallet);
       if (response.status === "success") {
-        const decryptedProfile = decryptProfile(
-          (response.data as { personalDetails: string })["personalDetails"]
+        const decryptedProfile = decryptData(
+          (response.data as { personalDetails: string })["personalDetails"], "profile"
         );
         setProfile(JSON.parse(decryptedProfile));
       }

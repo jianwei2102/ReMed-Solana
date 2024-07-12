@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import doctorImage from "../../assets/doctor.png";
 import { Wallet, web3 } from "@project-serum/anchor";
 import { Col, Row, Image, Button, message, Drawer, Divider } from "antd";
+import { fetchProfile, revokeDoctor, decryptData } from "../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { fetchProfile, decryptProfile, revokeDoctor } from "../../utils/util";
 
 interface DoctorAuthorizedProps {
   doctorDetails: { address: string, date: string };
@@ -60,8 +60,8 @@ const DoctorAuthorized = ({
       const doctorWallet = { publicKey };
       let response = await fetchProfile(connection, doctorWallet as Wallet);
       if (response.status === "success") {
-        const decryptedProfile = decryptProfile(
-          (response.data as { personalDetails: string })["personalDetails"]
+        const decryptedProfile = decryptData(
+          (response.data as { personalDetails: string })["personalDetails"], "profile"
         );
         setProfile(JSON.parse(decryptedProfile));
         console.log(JSON.parse(decryptedProfile));
