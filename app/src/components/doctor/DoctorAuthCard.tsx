@@ -17,18 +17,20 @@ interface Patient {
     dateOfBirth: string;
     phoneNo: string;
     address: string;
+    image: string;
 }
 
 interface NextOfKin {
     name: string;
-    relationship: string;
     gender: string;
+    relationship: string;
     dateOfBirth: string;
     phoneNo: string;
     address: string;
+    image: string;
 }
 
-interface MedicalRecord {
+interface PatientProfile {
     patient: Patient;
     nextOfKin: NextOfKin;
 }
@@ -55,7 +57,7 @@ const DoctorAuthCard = ({
     const [messageApi, contextHolder] = message.useMessage();
 
     const [open, setOpen] = useState(false);
-    const [profile, setProfile] = useState<MedicalRecord | undefined>();
+    const [profile, setProfile] = useState<PatientProfile | undefined>();
 
     const showDrawer = () => {
         setOpen(true);

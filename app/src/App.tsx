@@ -24,6 +24,7 @@ import {
   LabResults,
   DoctorAuthorization,
   DoctorMedicalRecord,
+  Profile,
 } from "./pages";
 import Test from "./pages/test";
 
@@ -104,6 +105,7 @@ function App() {
                       />
                       <Route path="/medications" element={<Medications />} />
                       <Route path="/labResults" element={<LabResults />} />
+                      <Route path="/profile" element={<Profile />} />
                       <Route path="/test" element={<Test />} />
                       <Route
                         path="/doctor/authorization"

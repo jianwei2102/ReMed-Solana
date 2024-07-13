@@ -28,8 +28,8 @@ interface AuthorizedDoctor {
 
 const Authorization = () => {
   const navigate = useNavigate();
-  const wallet = useAnchorWallet();
   const { connection } = useConnection();
+  const wallet = useAnchorWallet() as Wallet;
   const [messageApi, contextHolder] = message.useMessage();
 
   const [open, setOpen] = useState(false);
@@ -40,7 +40,7 @@ const Authorization = () => {
 
   const getAuthDoctor = useCallback(async () => {
     if (connection && wallet) {
-      let response = await fetchAuthDoctor(connection, wallet as Wallet);
+      let response = await fetchAuthDoctor(connection, wallet);
       if (response.status === "success") {
         setAuthorized((response.data as { authorized: AuthorizedDoctor[] })?.authorized.reverse());
       }

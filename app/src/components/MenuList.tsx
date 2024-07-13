@@ -2,6 +2,7 @@ import { Menu } from "antd";
 import Icon from "@ant-design/icons";
 import type { GetProps } from "antd";
 import { CgPill } from "react-icons/cg";
+import { AiOutlineUser } from "react-icons/ai";
 import { Wallet } from "@project-serum/anchor";
 import { fetchProfile, decryptData } from "../utils/util";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -85,6 +86,12 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         onClick: () => navigate("/labResults"),
       },
       {
+        key: "/profile",
+        icon: <AiOutlineUser size={18} />,
+        label: "Profile",
+        onClick: () => navigate("/profile"),
+      },
+      {
         key: "/settings",
         icon: <AiOutlineSetting size={18} />,
         label: "Settings",
@@ -121,13 +128,21 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
     if (wallet && connection) {
       fetchProfile(connection, wallet as Wallet).then((data) => {
         if (data.status === "success") {
-          const personalDetails = (data.data as { personalDetails: string })["personalDetails"];
+          let personalDetails = (data.data as { personalDetails: string })[
+            "personalDetails"
+          ];
           if ((data.data as { role: string })["role"] === "patient") {
-            sessionStorage.setItem("name", JSON.parse(decryptData(personalDetails, "profile")).patient.name);
+            sessionStorage.setItem(
+              "name",
+              JSON.parse(decryptData(personalDetails, "profile")).patient.name
+            );
             sessionStorage.setItem("role", "patient");
             setMenuItems(patientItems);
           } else if ((data.data as { role: string })["role"] === "doctor") {
-            sessionStorage.setItem("name", JSON.parse(decryptData(personalDetails, "profile")).fullName);
+            sessionStorage.setItem(
+              "name",
+              JSON.parse(decryptData(personalDetails, "profile")).fullName
+            );
             sessionStorage.setItem("role", "doctor");
             setMenuItems(doctorItems);
           }
