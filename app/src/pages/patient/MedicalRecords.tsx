@@ -22,9 +22,13 @@ const MedicalRecords = () => {
     if (response.status === "success") {
       let accountData = (response.data as { medication: object[] }).medication;
       let decryptedRecords = accountData.map((record) => {
-        return decryptData((record as { medication: string }).medication, "record");
+        return decryptData(
+          (record as { medication: string }).medication,
+          "record"
+        );
       });
       setMedicalRecords(decryptedRecords);
+      console.log(decryptedRecords);
     }
   }, [connection, wallet, navigate]);
 
@@ -54,7 +58,15 @@ const MedicalRecords = () => {
   return (
     <div>
       <div className="font-semibold text-xl mb-4">Medical Record</div>
-      <MedicalRecordItem />
+      {medicalRecords.map((record, index) => (
+        <MedicalRecordItem key={index} record={record} />
+      ))}
+
+      {medicalRecords?.length === 0 && (
+        <div className="text-center py-4 text-lg text-gray-500">
+          No medical record found
+        </div>
+      )}
     </div>
   );
 };
