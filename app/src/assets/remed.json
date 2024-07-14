@@ -153,7 +153,7 @@
           "isSigner": false
         },
         {
-          "name": "medicationList",
+          "name": "emrList",
           "isMut": true,
           "isSigner": false
         },
@@ -179,7 +179,11 @@
           "type": "string"
         },
         {
-          "name": "medication",
+          "name": "recordDetails",
+          "type": "string"
+        },
+        {
+          "name": "recordType",
           "type": "string"
         }
       ]
@@ -193,7 +197,7 @@
           "isSigner": false
         },
         {
-          "name": "medicationList",
+          "name": "emrList",
           "isMut": true,
           "isSigner": false
         },
@@ -223,7 +227,7 @@
           "type": "string"
         },
         {
-          "name": "medication",
+          "name": "recordDetails",
           "type": "string"
         }
       ]
@@ -263,15 +267,15 @@
       }
     },
     {
-      "name": "MedicationList",
+      "name": "EMRList",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "medication",
+            "name": "record",
             "type": {
               "vec": {
-                "defined": "Medication"
+                "defined": "EMR"
               }
             }
           }
@@ -297,7 +301,7 @@
       }
     },
     {
-      "name": "Medication",
+      "name": "EMR",
       "type": {
         "kind": "struct",
         "fields": [
@@ -306,7 +310,11 @@
             "type": "string"
           },
           {
-            "name": "medication",
+            "name": "recordDetails",
+            "type": "string"
+          },
+          {
+            "name": "recordType",
             "type": "string"
           },
           {
@@ -350,6 +358,6 @@
     }
   ],
   "metadata": {
-    "address": "E9DsKE43jPzqBWQ6SiF3GKoDvrj5wwHL7XdTYux1PdWp"
+    "address": "62GhTM7Hj1Bb5dfWFrxJMwv5LHBqZDhwtNFR17f7F6PB"
   }
 }

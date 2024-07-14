@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("E9DsKE43jPzqBWQ6SiF3GKoDvrj5wwHL7XdTYux1PdWp");
+declare_id!("62GhTM7Hj1Bb5dfWFrxJMwv5LHBqZDhwtNFR17f7F6PB");
 
 #[program]
 pub mod remed {
@@ -98,7 +98,8 @@ pub mod remed {
     pub fn append_record(
         ctx: Context<AppendRecord>,
         record_hash: String,
-        medication: String,
+        record_details: String,
+        record_type: String
     ) -> Result<()> {
         let patient_auth_list = &ctx.accounts.patient_auth_list;
         let doctor_address = ctx.accounts.signer.key().to_string();
@@ -110,21 +111,22 @@ pub mod remed {
             return Err(ErrorCode::AuthorizationNotExist.into());
         }
 
-        let medication_list = &mut ctx.accounts.medication_list.medication;
-        if medication_list
+        let emr_list = &mut ctx.accounts.emr_list.record;
+        if emr_list
             .iter()
             .any(|med| med.record_hash == record_hash)
         {
             return Err(ErrorCode::RecordHashExists.into());
         }
 
-        let new_medication = Medication {
+        let new_emr: EMR = EMR {
             record_hash,
-            medication,
+            record_details,
+            record_type,
             added_by: doctor_address,
         };
 
-        medication_list.push(new_medication);
+        emr_list.push(new_emr);
         Ok(())
     }
 
@@ -132,7 +134,7 @@ pub mod remed {
         ctx: Context<ModifyRecord>,
         current_record_hash: String,
         new_record_hash: String,
-        medication: String,
+        record_details: String,
     ) -> Result<()> {
         let patient_auth_list = &ctx.accounts.patient_auth_list;
         let doctor_address = ctx.accounts.signer.key().to_string();
@@ -145,19 +147,20 @@ pub mod remed {
         }
 
         // Find the record with the current_record_hash and replace it
-        let medication_list = &mut ctx.accounts.medication_list.medication;
-        if let Some(index) = medication_list
+        let emr_list = &mut ctx.accounts.emr_list.record;
+        if let Some(index) = emr_list
             .iter()
             .position(|med| med.record_hash == current_record_hash)
         {
             // Check if the record added by the signer
-            if medication_list[index].added_by == doctor_address {
-                let new_medication = Medication {
+            if emr_list[index].added_by == doctor_address {
+                let new_medication = EMR {
                     record_hash: new_record_hash,
-                    medication,
+                    record_details,
+                    record_type: emr_list[index].record_type.clone(),
                     added_by: doctor_address,
                 };
-                medication_list[index] = new_medication;
+                emr_list[index] = new_medication;
                 Ok(())
             } else {
                 return Err(ErrorCode::InvalidRecordPermission.into()); // Error code for invalid record permission
@@ -220,8 +223,8 @@ pub struct RevokePatient<'info> {
 pub struct AppendRecord<'info> {
     #[account(mut, seeds = [b"patient_auth_list", patient.key().as_ref()], bump)]
     pub patient_auth_list: Account<'info, AuthList>,
-    #[account(init_if_needed, payer = signer, space = 8 + 132*50, seeds = [b"medication_list", patient.key().as_ref()], bump)]
-    pub medication_list: Account<'info, MedicationList>,
+    #[account(init_if_needed, payer = signer, space = 8 + 132*50, seeds = [b"emr_list", patient.key().as_ref()], bump)]
+    pub emr_list: Account<'info, EMRList>,
     #[account(mut)]
     pub signer: Signer<'info>,
     /// CHECK: This is safe because we are only reading the `patient` account information, and it is not being mutated.
@@ -233,8 +236,8 @@ pub struct AppendRecord<'info> {
 pub struct ModifyRecord<'info> {
     #[account(mut, seeds = [b"patient_auth_list", patient.key().as_ref()], bump)]
     pub patient_auth_list: Account<'info, AuthList>,
-    #[account(mut, seeds = [b"medication_list", patient.key().as_ref()], bump)]
-    pub medication_list: Account<'info, MedicationList>,
+    #[account(mut, seeds = [b"emr_list", patient.key().as_ref()], bump)]
+    pub emr_list: Account<'info, EMRList>,
     #[account(mut)]
     pub signer: Signer<'info>,
     /// CHECK: This is safe because we are only reading the `patient` account information, and it is not being mutated.
@@ -260,15 +263,16 @@ pub struct AuthList {
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
-pub struct Medication {
+pub struct EMR {
     record_hash: String,
-    medication: String,
+    record_details: String,
+    record_type: String,
     added_by: String,
 }
 
 #[account]
-pub struct MedicationList {
-    medication: Vec<Medication>,
+pub struct EMRList {
+    record: Vec<EMR>,
 }
 
 #[error_code]
