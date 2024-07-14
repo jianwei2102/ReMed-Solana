@@ -120,6 +120,12 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         label: "Authorized",
         onClick: () => navigate("/doctor/authorization"),
       },
+      {
+        key: "/doctor/profile",
+        icon: <AiOutlineUser size={18} />,
+        label: "Profile",
+        onClick: () => navigate("/doctor/profile"),
+      },
     ],
     [navigate]
   );

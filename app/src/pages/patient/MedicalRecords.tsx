@@ -7,8 +7,8 @@ import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
 const MedicalRecords = () => {
   const navigate = useNavigate();
-  const wallet = useAnchorWallet();
   const { connection } = useConnection();
+  const wallet = useAnchorWallet() as Wallet;
 
   const [medicalRecords, setMedicalRecords] = useState<string[]>([]);
 
@@ -20,15 +20,24 @@ const MedicalRecords = () => {
 
     let response = await fetchRecord(connection, wallet as Wallet);
     if (response.status === "success") {
-      let accountData = (response.data as { medication: object[] }).medication;
-      let decryptedRecords = accountData.map((record) => {
+      let accountData = (response.data as { record: object[] }).record;
+
+      // Filter records where recordType is "medicalRecords"
+      let filteredRecords = accountData.filter(
+        (record) =>
+          (record as { recordType: string }).recordType === "medicalRecords"
+      );
+
+      // Decrypt recordDetails
+      let decryptedRecords = filteredRecords.map((record) => {
         return decryptData(
-          (record as { medication: string }).medication,
+          (record as { recordDetails: string }).recordDetails,
           "record"
         );
       });
+
       setMedicalRecords(decryptedRecords);
-      console.log(decryptedRecords);
+      // console.log(decryptedRecords);
     }
   }, [connection, wallet, navigate]);
 
@@ -38,7 +47,7 @@ const MedicalRecords = () => {
       return;
     }
 
-    let response = await fetchProfile(connection, wallet as Wallet);
+    let response = await fetchProfile(connection, wallet);
     if (response.status === "success") {
       const role = (response.data as { role: string }).role;
       if (role === "patient") {

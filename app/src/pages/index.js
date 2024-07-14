@@ -12,3 +12,4 @@ export { default as MedicalRecords } from "./patient/MedicalRecords.tsx";
 export { default as DoctorDashboard } from "./doctor/DoctorDashboard.tsx";
 export { default as DoctorAuthorization } from "./doctor/Authorization.tsx";
 export { default as DoctorMedicalRecord } from "./doctor/MedicalRecord.tsx";
+export { default as DoctorProfile } from "./doctor/Profile.tsx";

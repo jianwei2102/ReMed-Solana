@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import idl from "../assets/remed.json";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
@@ -56,24 +56,23 @@ const createProfile = async (
   }
 };
 
-
 const fetchProfile = async (connection: any, wallet: Wallet) => {
   try {
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
-    
+
     const profileSeeds = [
       Buffer.from("profile"),
       anchorProvider.wallet.publicKey.toBuffer(),
     ];
-    
+
     const [profileAccount] = await PublicKey.findProgramAddress(
       profileSeeds,
       program.programId
     );
-    
+
     const profileData = await program.account.profile.fetch(profileAccount);
-    
+
     return { status: "success", data: profileData };
   } catch (error) {
     console.error("Error reading profile:", error);
@@ -95,7 +94,7 @@ const encryptData = (data: String, dataType: String) => {
     ).toString();
   }
   return "";
-}
+};
 
 const decryptData = (data: String, dataType: String) => {
   // Decrypt the encrypted message using the same key
@@ -106,8 +105,7 @@ const decryptData = (data: String, dataType: String) => {
     );
     // Convert the decrypted message from a CryptoJS object to a regular string
     return decrypted.toString(CryptoJS.enc.Utf8);
-  }
-  else if (dataType === "record") {
+  } else if (dataType === "record") {
     let decrypted = CryptoJS.AES.decrypt(
       data,
       process.env.REACT_APP_EMR_ENCRYPTION_KEY
@@ -123,7 +121,7 @@ const authorizeDoctor = async (
   doctorAddress: string
 ) => {
   try {
-    const todayDate = format(new Date(), 'MMMM d, yyyy');
+    const todayDate = format(new Date(), "MMMM d, yyyy");
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
 
@@ -226,7 +224,10 @@ const revokePatient = async (
     );
 
     const patientPub = new PublicKey(patientAddress);
-    const patientSeeds = [Buffer.from("patient_auth_list"), patientPub.toBuffer()];
+    const patientSeeds = [
+      Buffer.from("patient_auth_list"),
+      patientPub.toBuffer(),
+    ];
     const [patientAuthList] = await PublicKey.findProgramAddress(
       patientSeeds,
       program.programId
@@ -298,13 +299,17 @@ const fetchAuthPatient = async (connection: any, wallet: Wallet) => {
   }
 };
 
-const generateHash = (additionalData: String, patientPubKey: String, doctorPubKey: String) => {
+const generateHash = (
+  additionalData: String,
+  patientPubKey: String,
+  doctorPubKey: String
+) => {
   const combinedString = `${additionalData}-${patientPubKey}-${doctorPubKey}`;
 
   // Create SHA-256 hash
   const hash = CryptoJS.SHA256(combinedString).toString(CryptoJS.enc.Hex);
   return hash;
-}
+};
 
 const appendRecord = async (
   connection: any,
@@ -312,6 +317,7 @@ const appendRecord = async (
   recordHash: string,
   record: string,
   patientAddress: string,
+  medicalRecords: string
 ) => {
   try {
     console.log(record.toString());
@@ -321,26 +327,26 @@ const appendRecord = async (
     const program = new Program(idl as Idl, programID, anchorProvider);
 
     const patientPub = new PublicKey(patientAddress);
-    const patientSeeds = [Buffer.from("patient_auth_list"), patientPub.toBuffer()];
+    const patientSeeds = [
+      Buffer.from("patient_auth_list"),
+      patientPub.toBuffer(),
+    ];
     const [patientAuthList] = await PublicKey.findProgramAddress(
       patientSeeds,
       program.programId
     );
 
-    const recordSeeds = [
-      Buffer.from("medication_list"),
-      patientPub.toBuffer()
-    ];
+    const recordSeeds = [Buffer.from("emr_list"), patientPub.toBuffer()];
     const [recordList] = await PublicKey.findProgramAddress(
       recordSeeds,
       program.programId
     );
 
     await program.methods
-      .appendRecord(recordHash, encryptedRecord)
+      .appendRecord(recordHash, encryptedRecord, medicalRecords)
       .accounts({
         patientAuthList: patientAuthList,
-        medicationList: recordList,
+        emrList: recordList,
         signer: anchorProvider.wallet.publicKey,
         patient: patientPub,
         systemProgram: SystemProgram.programId,
@@ -362,7 +368,7 @@ const fetchRecord = async (connection: any, wallet: Wallet) => {
     const program = new Program(idl as Idl, programID, anchorProvider);
 
     const recordSeeds = [
-      Buffer.from("medication_list"),
+      Buffer.from("emr_list"),
       anchorProvider.wallet.publicKey.toBuffer(),
     ];
 
@@ -371,7 +377,7 @@ const fetchRecord = async (connection: any, wallet: Wallet) => {
       program.programId
     );
 
-    const recordData = await program.account.medicationList.fetch(recordAccount);
+    const recordData = await program.account.emrList.fetch(recordAccount);
 
     return { status: "success", data: recordData };
   } catch (error) {

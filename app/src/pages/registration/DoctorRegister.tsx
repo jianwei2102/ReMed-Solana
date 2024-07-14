@@ -1,17 +1,54 @@
+import { useState } from "react";
+import { FaInfo } from "react-icons/fa";
 import { Wallet } from "@project-serum/anchor";
 import { useNavigate } from "react-router-dom";
 import { createProfile } from "../../utils/util";
-import { Form, Row, Col, Input, Button, Select, message } from "antd";
+import { useStorageUpload } from "@thirdweb-dev/react";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import {
+  Form,
+  Row,
+  Col,
+  Input,
+  Button,
+  Select,
+  message,
+  Tooltip,
+  Avatar,
+  Image,
+} from "antd";
 
 const { Option } = Select;
 
 const DoctorRegister = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const wallet = useAnchorWallet();
   const { connection } = useConnection();
+  const wallet = useAnchorWallet() as Wallet;
+  const { mutateAsync: upload } = useStorageUpload();
   const [messageApi, contextHolder] = message.useMessage();
+
+  const [file, setFile] = useState<File | undefined>();
+  const [fileUrl, setFileUrl] = useState<string | undefined>();
+
+  const uploadToIpfs = async (file: File) => {
+    try {
+      const uploadUrl = await upload({
+        data: [file],
+        options: {
+          uploadWithoutDirectory: true,
+          uploadWithGatewayUrl: true,
+        },
+      });
+
+      const cid = uploadUrl[0].split("/ipfs/")[1].split("/")[0];
+      console.log("IPFS CID:", cid);
+      return cid;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+    }
+  };
 
   const onFinish = async (values: any) => {
     // Combine the title and full name
@@ -24,7 +61,23 @@ const DoctorRegister = () => {
       fullName: combinedFullName,
     };
 
-    console.log("Received values of form: ", formattedValues);
+    try {
+      messageApi.open({
+        type: "loading",
+        content: "Uploading image file(s) to IPFS..",
+        duration: 0,
+      });
+
+      if (file) {
+        const cid = await uploadToIpfs(file);
+        formattedValues.image = cid; // Replace image with CID
+      }
+
+      messageApi.destroy();
+      console.log("Received values of form: ", formattedValues);
+    } catch (error) {
+      console.error("Error uploading file(s) to IPFS:", error);
+    }
 
     messageApi.open({
       type: "loading",
@@ -34,7 +87,7 @@ const DoctorRegister = () => {
 
     let response = await createProfile(
       connection,
-      wallet as Wallet,
+      wallet,
       "doctor",
       JSON.stringify(formattedValues)
     );
@@ -49,6 +102,7 @@ const DoctorRegister = () => {
         navigate("/authorization");
       }, 500);
     } else {
+      console.log("Error creating user profile:", response);
       messageApi.open({
         type: "error",
         content: "Error creating user profile",
@@ -180,6 +234,40 @@ const DoctorRegister = () => {
               style={{ width: "95%" }}
             />
           </Form.Item>
+          <Form.Item
+            name={["patient", "image"]} // Nested field for patient image
+            label={
+              <span className="flex justify-center items-center">
+                Profile Image
+                <Tooltip title="Image will be uploaded to IPFS">
+                  <Avatar
+                    size={20}
+                    className="bg-blue-300 ml-1"
+                    icon={<FaInfo />}
+                  />
+                </Tooltip>
+              </span>
+            }
+          >
+            <Row className="flex justify-center items-center">
+              <Col span={18}>
+                <Input
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setFile(e.target.files[0]);
+                      setFileUrl(URL.createObjectURL(e.target.files[0]));
+                    }
+                  }}
+                />
+              </Col>
+              <Col span={6} className="pl-2">
+                {fileUrl && (
+                  <Avatar size={48} icon={<Image src={fileUrl} alt="img" />} />
+                )}
+              </Col>
+            </Row>
+          </Form.Item>
         </Col>
 
         {/* Right Section */}
@@ -198,7 +286,7 @@ const DoctorRegister = () => {
           >
             <Input.TextArea
               placeholder="Medical School, Degrees, Certifications"
-              style={{ width: "95%", height: "80px" }}
+              style={{ width: "95%", height: "100px" }}
             />
           </Form.Item>
           <Form.Item
@@ -214,7 +302,7 @@ const DoctorRegister = () => {
           >
             <Input.TextArea
               placeholder="Years of practice, previous positions"
-              style={{ width: "95%", height: "80px" }}
+              style={{ width: "95%", height: "100px" }}
             />
           </Form.Item>
           <Form.Item
@@ -228,8 +316,8 @@ const DoctorRegister = () => {
               },
             ]}
           >
-           <Select
-               mode="tags"
+            <Select
+              mode="tags"
               style={{ width: "95%" }}
               placeholder="Type or select languages spoken"
               options={[

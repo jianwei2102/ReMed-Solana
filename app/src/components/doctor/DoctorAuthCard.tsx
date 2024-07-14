@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wallet, web3 } from "@project-serum/anchor";
-import { Button, Col, message, Row, Divider, Drawer } from "antd";
+import {
+  Button,
+  Col,
+  message,
+  Row,
+  Divider,
+  Drawer,
+  Avatar,
+  Image,
+} from "antd";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { decryptData, fetchProfile, revokePatient } from "../../utils/util";
 
@@ -113,12 +122,26 @@ const DoctorAuthCard = ({
     <>
       <Row className="border my-2 mr-2 py-4 px-8 rounded-lg">
         {contextHolder}
-        <Col span={16} className="flex flex-col justify-center items-start">
-          <span className="font-semibold text-lg">{profile?.patient.name}</span>
-          <span>
-            Authorize:
-            <span className="text-gray-500"> {patientDetails.date}</span>
-          </span>
+        <Col span={16} className="flex flex-row justify-start items-center">
+          <Avatar
+            size={48}
+            icon={
+              <Image
+                src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.patient.image}/`}
+                alt="Avatar Image"
+              />
+            }
+            className="mr-2"
+          />
+          <div className="flex flex-col ml-2">
+            <span className="font-semibold text-lg">
+              {profile?.patient.name}
+            </span>
+            <span>
+              Authorize:
+              <span className="text-gray-500"> {patientDetails.date}</span>
+            </span>
+          </div>
         </Col>
         <Col span={8} className="flex flex-col justify-center items-center">
           <Button
@@ -149,10 +172,18 @@ const DoctorAuthCard = ({
         onClose={onClose}
         open={open}
       >
-        <p className="block text-black/85 text-[18px] leading-[1.5715] mb-6">
-          Patient Profile
-        </p>
-        <p className="block mb-4 text-black/85 text-[16px] leading-[1.5715]">
+        <p className="text-xl mb-6 italic">Patient Profile</p>
+        <p className="mb-4 text-lg font-semibold">
+          <Avatar
+            size={32}
+            icon={
+              <Image
+                src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.patient.image}/`}
+                alt="Avatar Image"
+              />
+            }
+            className="mr-2"
+          />
           Patient
         </p>
         <Row>
@@ -211,7 +242,17 @@ const DoctorAuthCard = ({
           </Col>
         </Row>
         <Divider />
-        <p className="block mb-4 text-black/85 text-[16px] leading-[1.5715]">
+        <p className="mb-4 text-lg font-semibold">
+          <Avatar
+            size={32}
+            icon={
+              <Image
+                src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.nextOfKin.image}/`}
+                alt="Avatar Image"
+              />
+            }
+            className="mr-2"
+          />
           Next of Kin
         </p>
         <Row>
@@ -257,12 +298,21 @@ const DoctorAuthCard = ({
           </Col>
         </Row>
         <Divider />
-        <Row className="flex justify-evenly ">
-          <Col span={12}>
-            <Button>View Record</Button>
+        <Row>
+          <Col span={24} className="flex items-center justify-center ">
+            <Button size="large">View Record</Button>
           </Col>
-          <Col span={12}>
-            <Button onClick={() => navigate("/doctor/medicalRecord")}>
+        </Row>
+        <Row className="mt-4">
+          <Col span={24} className="flex items-center justify-center">
+            <Button
+              size="large"
+              onClick={() =>
+                navigate(
+                  `/doctor/medicalRecord?address=${patientDetails.address}&name=${profile?.patient.name}`
+                )
+              }
+            >
               Append Record
             </Button>
           </Col>

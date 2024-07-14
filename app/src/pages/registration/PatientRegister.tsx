@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { format } from "date-fns";
 import { FaInfo } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { Wallet } from "@project-serum/anchor";
 import { createProfile } from "../../utils/util";
+import { useStorageUpload } from "@thirdweb-dev/react";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Button,
@@ -17,8 +19,6 @@ import {
   Avatar,
   Tooltip,
 } from "antd";
-import { useState } from "react";
-import { useStorageUpload } from "@thirdweb-dev/react";
 
 const PatientRegister = () => {
   const [form] = Form.useForm();
@@ -28,10 +28,10 @@ const PatientRegister = () => {
   const { mutateAsync: upload } = useStorageUpload();
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [patientFile, setPatientFile] = useState<File | undefined>();
   const [nokFile, setNokFile] = useState<File | undefined>();
-  const [patientFileUrl, setPatientFileUrl] = useState<string | undefined>();
   const [nokFileUrl, setNokFileUrl] = useState<string | undefined>();
+  const [patientFile, setPatientFile] = useState<File | undefined>();
+  const [patientFileUrl, setPatientFileUrl] = useState<string | undefined>();
 
   const uploadToIpfs = async (file: File) => {
     try {

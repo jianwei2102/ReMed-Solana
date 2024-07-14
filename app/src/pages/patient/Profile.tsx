@@ -120,7 +120,7 @@ const Profile = () => {
                   size={48}
                   icon={
                     <Image
-                      src={`https://69784692103c87e7e76471acf5f2c663.ipfscdn.io/ipfs/${details?.patient.image}/`}
+                      src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${details?.patient.image}/`}
                       alt="Avatar Image"
                     />
                   }
@@ -167,7 +167,7 @@ const Profile = () => {
                   size={48}
                   icon={
                     <Image
-                      src={`https://69784692103c87e7e76471acf5f2c663.ipfscdn.io/ipfs/${details?.nextOfKin.image}/`}
+                      src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${details?.nextOfKin.image}/`}
                       alt="Avatar Image"
                     />
                   }

@@ -1,7 +1,9 @@
 import dayjs from "dayjs";
 import { format } from "date-fns";
 import { Wallet } from "@project-serum/anchor";
-import { appendRecord, generateHash } from "../../utils/util";
+import { useCallback, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { appendRecord, fetchProfile, generateHash } from "../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Button,
@@ -17,9 +19,35 @@ import {
 
 const MedicalRecord = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
   const { connection } = useConnection();
+  const [searchParams] = useSearchParams();
   const wallet = useAnchorWallet() as Wallet;
   const [messageApi, contextHolder] = message.useMessage();
+
+  const patientName = searchParams.get("name") ?? "";
+  const patientAddress = searchParams.get("address") ?? "";
+
+  const checkAuthority = useCallback(async () => {
+    if (!connection || !wallet) {
+      navigate("/");
+      return;
+    }
+
+    let response = await fetchProfile(connection, wallet);
+    if (response.status === "success") {
+      const role = (response.data as { role: string }).role;
+      if (role === "patient") {
+        navigate("/");
+      }
+    } else {
+      navigate("/");
+    }
+  }, [connection, wallet, navigate]);
+
+  useEffect(() => {
+    checkAuthority();
+  }, [checkAuthority]);
 
   const onFinish = async (values: any) => {
     const record = {
@@ -30,7 +58,7 @@ const MedicalRecord = () => {
     const recordHash = generateHash(
       record,
       wallet.publicKey.toBase58(),
-      "HB56SU6Rb55MKKGsg962tqsRnZmriMM2Sej3FeFCzQxb"
+      patientAddress
     );
     console.log(record, recordHash);
 
@@ -45,7 +73,8 @@ const MedicalRecord = () => {
       wallet,
       recordHash,
       JSON.stringify(record),
-      "HB56SU6Rb55MKKGsg962tqsRnZmriMM2Sej3FeFCzQxb"
+      patientAddress,
+      "medicalRecords"
     );
 
     messageApi.destroy();
@@ -61,14 +90,21 @@ const MedicalRecord = () => {
       });
     }
   };
-  
+
   const formItemLayout = { labelCol: { span: 4 }, wrapperCol: { span: 20 } };
+
+  // Set initial values for form fields
+  const initialValues = {
+    date: dayjs(),
+    time: dayjs(),
+    location: sessionStorage.getItem("affiliations")?.toString() || "",
+  };
 
   return (
     <div>
       {contextHolder}
       <div className="font-semibold underline text-xl text-[#124588] mb-4">
-        Create New Medical Record - Samuel Robinson
+        Create New Medical Record - {patientName}
       </div>
       <div className="font-semibold text-xl mb-4">Medical Record Details</div>
       <Form
@@ -77,6 +113,7 @@ const MedicalRecord = () => {
         className="mt-4"
         layout="horizontal"
         onFinish={onFinish}
+        initialValues={initialValues}
       >
         <Space direction="vertical" size="middle" className="flex">
           <Card title="General Information" className="border-2">
@@ -251,7 +288,7 @@ const MedicalRecord = () => {
                   },
                 ]}
               >
-                <DatePicker defaultValue={dayjs()} style={{ width: "40%" }} />
+                <DatePicker style={{ width: "40%" }} />
               </Form.Item>
               <Form.Item
                 name={"time"}
@@ -264,7 +301,7 @@ const MedicalRecord = () => {
                   },
                 ]}
               >
-                <TimePicker defaultValue={dayjs()} style={{ width: "40%" }} />
+                <TimePicker style={{ width: "40%" }} />
               </Form.Item>
               <Form.Item
                 name={"location"}
@@ -277,13 +314,7 @@ const MedicalRecord = () => {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Clinic XYZ"
-                  defaultValue={sessionStorage
-                    .getItem("affiliations")
-                    ?.toString()}
-                  style={{ width: "70%" }}
-                />
+                <Input placeholder="Clinic XYZ" style={{ width: "70%" }} />
               </Form.Item>
               <Form.Item name={"remark"} label="Remarks">
                 <Input.TextArea
