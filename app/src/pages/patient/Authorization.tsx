@@ -1,8 +1,8 @@
 import { format } from "date-fns/format";
 import { useNavigate } from "react-router-dom";
-import { DoctorAuthorized } from "../../components";
 import { Wallet, web3 } from "@project-serum/anchor";
 import { useState, useEffect, useCallback } from "react";
+import { DoctorAuthorized, QRReader } from "../../components";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
@@ -42,7 +42,11 @@ const Authorization = () => {
     if (connection && wallet) {
       let response = await fetchAuthDoctor(connection, wallet);
       if (response.status === "success") {
-        setAuthorized((response.data as { authorized: AuthorizedDoctor[] })?.authorized.reverse());
+        setAuthorized(
+          (
+            response.data as { authorized: AuthorizedDoctor[] }
+          )?.authorized.reverse()
+        );
       }
     }
   }, [connection, wallet]);
@@ -148,10 +152,20 @@ const Authorization = () => {
   };
 
   const revokeDoctorCallback = (doctorAddress: string) => {
-    setAuthorized((prev) => prev.filter((item) => item.address !== doctorAddress));
+    setAuthorized((prev) =>
+      prev.filter((item) => item.address !== doctorAddress)
+    );
     messageApi.open({
       type: "success",
       content: "Doctor revoked successfully",
+    });
+  };
+
+  const handleScanSuccess = (result: string) => {
+    setDoctorAddress(result);
+    messageApi.open({
+      type: "success",
+      content: "QR Code Scanned Successfully",
     });
   };
 
@@ -172,7 +186,7 @@ const Authorization = () => {
         </Button>
 
         <Modal
-          title="Enter Doctor's Address"
+          title="Enter Doctor's Wallet Address"
           open={open}
           onOk={handleOk}
           confirmLoading={confirmLoading}
@@ -183,6 +197,13 @@ const Authorization = () => {
             value={doctorAddress}
             onChange={(e) => setDoctorAddress(e.target.value)}
           />
+          <div className="text-sm text-gray-500 pt-2">
+            Note: Ensure the address belongs to a registered healthcare
+            provider.
+          </div>
+          <Divider />
+          <QRReader onScanSuccess={handleScanSuccess} />{" "}
+          {/* Pass the callback prop */}
         </Modal>
       </Space>
 
@@ -208,13 +229,16 @@ const Authorization = () => {
       {authorized?.map((item, index) => (
         <DoctorAuthorized
           key={index}
-          doctorDetails={(item as unknown) as { address: string; date: string }}
+          doctorDetails={item as unknown as { address: string; date: string }}
           revokeDoctorCallback={revokeDoctorCallback}
         />
       ))}
 
-      {authorized?.length === 0 && <div className="text-center py-4 text-lg text-gray-500">No authorized doctors</div>}
-
+      {authorized?.length === 0 && (
+        <div className="text-center py-4 text-lg text-gray-500">
+          No authorized doctors
+        </div>
+      )}
     </div>
   );
 };
