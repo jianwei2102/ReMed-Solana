@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wallet } from "@project-serum/anchor";
-import { Avatar, Card, Col, Image, Row, Space } from "antd";
 import { decryptData, fetchProfile } from "../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Descriptions,
+  Image,
+  Modal,
+  QRCode,
+  QRCodeProps,
+  Row,
+  Space,
+} from "antd";
 
 interface PatientDetails {
   name: string;
@@ -36,10 +48,42 @@ const Profile = () => {
   const wallet = useAnchorWallet() as Wallet;
 
   const [details, setDetails] = useState<ProfileDetails | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [renderType] = useState<QRCodeProps["type"]>("canvas");
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  function doDownload(url: string, fileName: string) {
+    const a = document.createElement("a");
+    a.download = fileName;
+    a.href = url;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  const downloadQRCode = () => {
+    const canvas = document
+      .getElementById("myqrcode")
+      ?.querySelector<HTMLCanvasElement>("canvas");
+    if (canvas) {
+      const url = canvas.toDataURL();
+      doDownload(url, "QRCode.png");
+    }
+  };
 
   useEffect(() => {
     const getProfile = async () => {
       if (!connection || !wallet) {
+        console.log("Connection or wallet not found");
         navigate("/");
         return;
       }
@@ -53,6 +97,7 @@ const Profile = () => {
           ];
           let details = JSON.parse(decryptData(personalDetails, "profile"));
           setDetails(details);
+          console.log("details", details);
         } else if (role === "doctor") {
           navigate("/");
         }
@@ -65,68 +110,129 @@ const Profile = () => {
   }, [connection, wallet, navigate]);
 
   return (
-    <Space direction="vertical" size={22} className="w-full">
-      <Card
-        title={
-          <Row className="py-2" gutter={10}>
-            <Col>
-              <Avatar
-                size={48}
-                icon={
-                  <Image
-                    src={`https://69784692103c87e7e76471acf5f2c663.ipfscdn.io/ipfs/${details?.patient.image}/`}
-                    alt="Avatar Image"
-                  />
-                }
-              />
-            </Col>
-            <Col>
-              <div>{details?.patient.name}</div>
-              <div className="font-normal">{wallet.publicKey.toBase58()}</div>
-            </Col>
-          </Row>
-        }
-        extra={"QR Code"}
+    <>
+      <Space direction="vertical" size={22} className="w-full">
+        <Card
+          title={
+            <Row className="py-2" gutter={10}>
+              <Col>
+                <Avatar
+                  size={48}
+                  icon={
+                    <Image
+                      src={`https://69784692103c87e7e76471acf5f2c663.ipfscdn.io/ipfs/${details?.patient.image}/`}
+                      alt="Avatar Image"
+                    />
+                  }
+                />
+              </Col>
+              <Col className="ml-2">
+                <div>{details?.patient.name}</div>
+                <div className="font-normal">
+                  {wallet?.publicKey.toBase58()}
+                </div>
+              </Col>
+            </Row>
+          }
+          extra={
+            <Button type="link" onClick={showModal}>
+              QR Code
+            </Button>
+          }
+        >
+          <Descriptions column={1}>
+            <Descriptions.Item label="Gender">
+              {details?.patient.gender}
+            </Descriptions.Item>
+            <Descriptions.Item label="Blood Group">
+              {details?.patient.bloodGroup}
+            </Descriptions.Item>
+            <Descriptions.Item label="Date of Birth">
+              {details?.patient.dateOfBirth}
+            </Descriptions.Item>
+            <Descriptions.Item label="Phone No.">
+              {details?.patient.phoneNo}
+            </Descriptions.Item>
+            <Descriptions.Item label="Address">
+              {details?.patient.address}
+            </Descriptions.Item>
+          </Descriptions>
+        </Card>
+
+        <Card
+          title={
+            <Row className="py-2" gutter={10}>
+              <Col>
+                <Avatar
+                  size={48}
+                  icon={
+                    <Image
+                      src={`https://69784692103c87e7e76471acf5f2c663.ipfscdn.io/ipfs/${details?.nextOfKin.image}/`}
+                      alt="Avatar Image"
+                    />
+                  }
+                />
+              </Col>
+              <Col className="ml-2">
+                <div>{details?.nextOfKin.name}</div>
+                <div className="font-normal">
+                  {details?.nextOfKin.relationship}
+                </div>
+              </Col>
+            </Row>
+          }
+          style={{ width: "100%" }}
+        >
+          <Descriptions column={1}>
+            <Descriptions.Item label="Name">
+              {details?.nextOfKin.name}
+            </Descriptions.Item>
+            <Descriptions.Item label="Gender">
+              {details?.nextOfKin.gender}
+            </Descriptions.Item>
+            <Descriptions.Item label="Relationship">
+              {details?.nextOfKin.relationship}
+            </Descriptions.Item>
+            <Descriptions.Item label="Date of Birth">
+              {details?.nextOfKin.dateOfBirth}
+            </Descriptions.Item>
+            <Descriptions.Item label="Phone No.">
+              {details?.nextOfKin.phoneNo}
+            </Descriptions.Item>
+            <Descriptions.Item label="Address">
+              {details?.nextOfKin.address}
+            </Descriptions.Item>
+          </Descriptions>
+        </Card>
+      </Space>
+      <Modal
+        title="Wallet Address's QR Code"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[]}
+        width={420}
+        centered
       >
-        <div className="w-full">
-          <Row>
-            <Col span={4} className="font-bold">
-              Gander
-            </Col>
-            <Col span={20}>{details?.patient.gender}</Col>
-          </Row>
-          <Row>
-            <Col span={4} className="font-bold">
-              Blood Group
-            </Col>
-            <Col span={20}>{details?.patient.gender}</Col>
-          </Row>
-          <Row>
-            <Col span={4} className="font-bold">
-              Date of Birth
-            </Col>
-            <Col span={20}>{details?.patient.gender}</Col>
-          </Row>
-          <Row>
-            <Col span={4} className="font-bold">
-              Phone No.
-            </Col>
-            <Col span={20}>{details?.patient.gender}</Col>
-          </Row>
-          <Row>
-            <Col span={4} className="font-bold">
-              Address
-            </Col>
-            <Col span={20}>{details?.patient.gender}</Col>
-          </Row>
+        <div
+          id="myqrcode"
+          className="flex flex-col justify-center items-center mt-4"
+        >
+          <QRCode
+            type={renderType}
+            bgColor="#fff"
+            value={wallet?.publicKey.toBase58()}
+          />
+          <Button type="primary" className="mt-4" onClick={downloadQRCode}>
+            Download
+          </Button>
+          <span className="mt-4 text-center">
+            <p className="text-sm font-semibold">Your Wallet Address</p>
+            <p className="text-xs">{wallet?.publicKey.toBase58()}</p>
+          </span>
         </div>
-      </Card>
-      <Card size="small" title="Small size card" style={{ width: "100%" }}>
-        <p>Card content</p>
-        <p>Card content</p>
-        <p>Card content</p>
-      </Card>
-    </Space>
+      </Modal>
+    </>
   );
 };
 
