@@ -11,6 +11,7 @@ const MedicalRecords = () => {
   const wallet = useAnchorWallet() as Wallet;
 
   const [medicalRecords, setMedicalRecords] = useState<string[]>([]);
+  const [medicalRecordsHash, setMedicalRecordsHash] = useState<string[]>([]);
 
   const getMedicalRecords = useCallback(async () => {
     if (!connection || !wallet) {
@@ -20,24 +21,29 @@ const MedicalRecords = () => {
 
     let response = await fetchRecord(connection, wallet as Wallet);
     if (response.status === "success") {
-      let accountData = (response.data as { record: object[] }).record;
+      let accountData = (
+        response.data as {
+          record: {
+            recordHash: string;
+            recordType: string;
+            recordDetails: string;
+          }[];
+        }
+      ).record;
 
       // Filter records where recordType is "medicalRecords"
       let filteredRecords = accountData.filter(
-        (record) =>
-          (record as { recordType: string }).recordType === "medicalRecords"
+        (record) => record.recordType === "medicalRecords"
       );
 
       // Decrypt recordDetails
       let decryptedRecords = filteredRecords.map((record) => {
-        return decryptData(
-          (record as { recordDetails: string }).recordDetails,
-          "record"
-        );
+        return decryptData(record.recordDetails, "record");
       });
 
       setMedicalRecords(decryptedRecords);
-      // console.log(decryptedRecords);
+      setMedicalRecordsHash(filteredRecords.map((record) => record.recordHash));
+      // console.log(medicalRecordsHash);
     }
   }, [connection, wallet, navigate]);
 
@@ -68,7 +74,11 @@ const MedicalRecords = () => {
     <div>
       <div className="font-semibold text-xl mb-4">Medical Record</div>
       {medicalRecords.map((record, index) => (
-        <MedicalRecordItem key={index} record={record} />
+        <MedicalRecordItem
+          key={index}
+          record={record}
+          recordsHash={medicalRecordsHash[index]}
+        />
       ))}
 
       {medicalRecords?.length === 0 && (

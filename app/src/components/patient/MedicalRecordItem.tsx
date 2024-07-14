@@ -3,9 +3,10 @@ import type { DescriptionsProps } from "antd";
 
 interface MedicalRecordItemProps {
   record: string;
+  recordsHash: string;
 }
 
-const MedicalRecordItem = ({ record }: MedicalRecordItemProps) => {
+const MedicalRecordItem = ({ record, recordsHash }: MedicalRecordItemProps) => {
   const parsedRecord = JSON.parse(record);
 
   const items: DescriptionsProps["items"] = [
@@ -34,9 +35,15 @@ const MedicalRecordItem = ({ record }: MedicalRecordItemProps) => {
   return (
     <div className="border rounded-lg p-4 mb-4">
       <Space size={2} direction="vertical">
-        <div>
-          <span className="font-semibold">{parsedRecord.visitType} - </span>
-          {`${parsedRecord.location}, ${parsedRecord.date}, ${parsedRecord.time}`}
+        <div className="flex">
+          <p className="font-semibold">{parsedRecord.visitType}: </p>
+          <p className="truncate pl-4">
+            {`${parsedRecord.location}, ${parsedRecord.date}, ${parsedRecord.time}`}
+          </p>
+        </div>
+        <div className="flex">
+          <p className="font-semibold"> Record Hash: </p>
+          <p className="truncate pl-3">{` ${recordsHash}`}</p>
         </div>
         <Descriptions
           className="bg-[#D2DDEA] rounded-lg px-4 pt-2 mt-2"
