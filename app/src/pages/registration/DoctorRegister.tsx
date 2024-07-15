@@ -235,7 +235,7 @@ const DoctorRegister = () => {
             />
           </Form.Item>
           <Form.Item
-            name={["patient", "image"]} // Nested field for patient image
+            name={["image"]}
             label={
               <span className="flex justify-center items-center">
                 Profile Image

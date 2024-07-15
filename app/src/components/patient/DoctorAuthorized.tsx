@@ -11,6 +11,18 @@ interface DoctorAuthorizedProps {
   revokeDoctorCallback: (doctorAddress: string) => void;
 }
 
+interface Profile {
+  specialization: string;
+  medicalLicenseNumber: string;
+  affiliations: string;
+  workHours: string;
+  education: string;
+  experience: string;
+  languagesSpoken: string[];
+  contactInformation: string;
+  fullName: string;
+}
+
 interface DescriptionItemProps {
   title: string;
   content: React.ReactNode;
@@ -42,22 +54,9 @@ const DoctorAuthorized = ({
   const showDrawer = () => {
     setOpen(true);
   };
-
   const onClose = () => {
     setOpen(false);
   };
-
-  interface Profile {
-    specialization: string;
-    medicalLicenseNumber: string;
-    affiliations: string;
-    workHours: string;
-    education: string;
-    experience: string;
-    languagesSpoken: string[];
-    contactInformation: string;
-    fullName: string;
-  }
 
   useEffect(() => {
     const getProfile = async () => {

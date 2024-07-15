@@ -126,6 +126,18 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         label: "Profile",
         onClick: () => navigate("/doctor/profile"),
       },
+      {
+        key: "/settings",
+        icon: <AiOutlineSetting size={18} />,
+        label: "Settings",
+        onClick: () => navigate("/settings"),
+      },
+      {
+        key: "/notification",
+        icon: <MdOutlineNotificationsActive size={18} />,
+        label: "Notification",
+        onClick: () => navigate("/notification"),
+      },
     ],
     [navigate]
   );
