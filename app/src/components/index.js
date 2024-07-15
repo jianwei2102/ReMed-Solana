@@ -12,3 +12,4 @@ export { default as LabResultItem } from "./patient/LabResultItem.tsx";
 export { default as QRReader } from "./patient/QRReader.tsx";
 
 export { default as DoctorAuthCard } from "./doctor/DoctorAuthCard.tsx";
+export { default as PatientAuthorized } from "./doctor/PatientAuthorized.tsx";

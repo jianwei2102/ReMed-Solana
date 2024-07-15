@@ -34,8 +34,8 @@ const Authorization = () => {
 
   const [open, setOpen] = useState(false);
   const [doctorAddress, setDoctorAddress] = useState("");
-  const [authorized, setAuthorized] = useState<AuthorizedDoctor[]>([]);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [authorized, setAuthorized] = useState<AuthorizedDoctor[]>([]);
   const [segmentedValue, setSegmentedValue] = useState<string>("View All");
 
   const getAuthDoctor = useCallback(async () => {
@@ -51,7 +51,7 @@ const Authorization = () => {
     }
   }, [connection, wallet]);
 
-  const getProfile = useCallback(async () => {
+  const checkAuthority = useCallback(async () => {
     if (!connection || !wallet) {
       navigate("/");
       return;
@@ -71,10 +71,11 @@ const Authorization = () => {
   }, [connection, wallet, navigate, getAuthDoctor]);
 
   useEffect(() => {
-    getProfile();
-  }, [getProfile]);
+    checkAuthority();
+  }, [checkAuthority]);
 
   const checkDoctorRole = async (doctorAddress: string) => {
+    // Check if the address belongs to a registered healthcare provider
     try {
       const publicKey = new web3.PublicKey(doctorAddress);
       const doctorWallet = { publicKey } as Wallet;
@@ -143,6 +144,14 @@ const Authorization = () => {
     }
   };
 
+  const handleScanSuccess = (result: string) => {
+    setDoctorAddress(result);
+    messageApi.open({
+      type: "success",
+      content: "QR Code Scanned Successfully",
+    });
+  };
+  
   const handleOk = async () => {
     setConfirmLoading(true);
     await authorizeDoc(doctorAddress);
@@ -158,14 +167,6 @@ const Authorization = () => {
     messageApi.open({
       type: "success",
       content: "Doctor revoked successfully",
-    });
-  };
-
-  const handleScanSuccess = (result: string) => {
-    setDoctorAddress(result);
-    messageApi.open({
-      type: "success",
-      content: "QR Code Scanned Successfully",
     });
   };
 
