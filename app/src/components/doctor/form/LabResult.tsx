@@ -90,6 +90,7 @@ const LabResult: React.FC = () => {
         date: format(dayjs().toDate(), "dd-MM-yyyy"),
         time: format(dayjs().toDate(), "hh:mm a"),
         type: labType,
+        location: sessionStorage.getItem("affiliations")?.toString(),
       };
       const recordHash = generateHash(
         JSON.stringify(record),

@@ -14,11 +14,6 @@ const MedicalRecords = () => {
   const [medicalRecordsHash, setMedicalRecordsHash] = useState<string[]>([]);
 
   const getMedicalRecords = useCallback(async () => {
-    if (!connection || !wallet) {
-      navigate("/");
-      return;
-    }
-
     let response = await fetchRecord(connection, wallet as Wallet);
     if (response.status === "success") {
       let accountData = (
@@ -45,7 +40,7 @@ const MedicalRecords = () => {
       setMedicalRecordsHash(filteredRecords.map((record) => record.recordHash));
       // console.log(medicalRecordsHash);
     }
-  }, [connection, wallet, navigate]);
+  }, [connection, wallet]);
 
   const getProfile = useCallback(async () => {
     if (!connection || !wallet) {
