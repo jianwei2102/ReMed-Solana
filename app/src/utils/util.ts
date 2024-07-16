@@ -386,6 +386,55 @@ const fetchRecord = async (connection: any, wallet: Wallet) => {
   }
 };
 
+const processRecords = (decryptedRecords: string[]): any[] => {
+  const today = new Date();
+
+  // Process records to determine current and past medications
+  return decryptedRecords
+    .map((medication) => {
+      const medicationJSON = JSON.parse(medication);
+      const { date, medications, time, location } = medicationJSON;
+
+      // Convert date from "dd-mm-yyyy" to "mm/dd/yyyy"
+      const [day, month, year] = date.split("-").map(Number);
+      const formattedDate = new Date(year, month - 1, day);
+
+      // Map medications to include current status
+      const mappedMedications = medications.map((med: any) => {
+        const medicationDate = new Date(formattedDate);
+        medicationDate.setDate(medicationDate.getDate() + med.duration -1);
+
+        return {
+          ...med,
+          current: today <= medicationDate,
+        };
+      });
+
+      // Determine if any medication is current
+      const isCurrent = mappedMedications.some((med: any) => med.current);
+
+      // Sort medications so that current medications come first
+      const sortedMedications = mappedMedications.sort((a: any, b: any) => {
+        if (a.current && !b.current) return -1; // a comes first if current
+        if (!a.current && b.current) return 1; // b comes first if current
+        return 0; // maintain original order for same status
+      });
+
+      return {
+        date,
+        time,
+        location,
+        medications: sortedMedications,
+        current: isCurrent,
+      };
+    })
+    .sort((a: any, b: any) => {
+      if (a.current && !b.current) return -1; // a comes first if current
+      if (!a.current && b.current) return 1; // b comes first if current
+      return 0; // maintain original order for same status
+    });
+};
+
 export {
   getProvider,
   createProfile,
@@ -399,4 +448,5 @@ export {
   generateHash,
   appendRecord,
   fetchRecord,
+  processRecords,
 };

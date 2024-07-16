@@ -2,24 +2,36 @@ import { Space } from "antd";
 import { MedicationCard } from "../";
 
 interface MedicationItemProps {
-  current: boolean;
+  medication: {
+    medications: {
+      indication: string;
+      medication: string;
+      frequency: string;
+      administration: string;
+      duration: number;
+    }[];
+    date: string;
+    time: string;
+    location: string;
+  };
+  recordHash: string;
 }
 
-const MedicationItem = ({ current }: MedicationItemProps) => {
+const MedicationItem = ({ medication, recordHash }: MedicationItemProps) => {
   return (
-    <div className={`border rounded-lg p-4 mb-4 ${!current && "bg-[#F3F3F3]"}`}>
+    <div className={`border rounded-lg p-4 mb-4`}>
       <Space size={2} direction="vertical">
         <div>
           <span className="font-semibold">Dispensed by: </span>
-          Dr. Rayon, Rayon Pharmacy, 15-01-2024
+          {`${medication.location}, ${medication.date}, ${medication.time}`}
         </div>
         <div>
-          <span className="font-semibold">Transaction Hash:</span> 0x...34123a
+          <span className="font-semibold">Transaction Hash:</span> {recordHash}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2">
-          <MedicationCard current={current} itemNo={1} />
-          <MedicationCard current={current} itemNo={2} />
-          <MedicationCard current={current} itemNo={1} />
+          {medication.medications.map((med, index) => (
+            <MedicationCard key={index} medication={med} />
+          ))}
         </div>
       </Space>
     </div>

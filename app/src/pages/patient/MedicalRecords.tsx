@@ -27,9 +27,9 @@ const MedicalRecords = () => {
       ).record;
 
       // Filter records where recordType is "medicalRecords"
-      let filteredRecords = accountData.filter(
-        (record) => record.recordType === "medicalRecords"
-      );
+      let filteredRecords = accountData
+        .filter((record) => record.recordType === "medicalRecords")
+        .reverse();
 
       // Decrypt recordDetails
       let decryptedRecords = filteredRecords.map((record) => {

@@ -32,9 +32,11 @@ const LabResults = () => {
       );
 
       // Decrypt recordDetails
-      let decryptedRecords = filteredRecords.map((record) => {
-        return decryptData(record.recordDetails, "record");
-      });
+      let decryptedRecords = filteredRecords
+        .map((record) => {
+          return decryptData(record.recordDetails, "record");
+        })
+        .reverse();
 
       console.log(decryptedRecords);
 

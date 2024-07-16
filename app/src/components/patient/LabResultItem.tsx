@@ -119,9 +119,9 @@ const LabResultItem = ({ record, recordHash }: LabResultItemProps) => {
             key: "2",
             label: "Imaging Links",
             children: (
-              <div>
+              <div className="flex gap-4">
                 {parsedRecord.xrayImages.map((image: string, index: number) => (
-                  <div key={index}>
+                  <div key={index} className="flex flex-col justify-center items-center">
                     <Image
                       src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${image}/`}
                       alt="X-Ray Image"
