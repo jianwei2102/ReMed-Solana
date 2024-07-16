@@ -51,7 +51,7 @@ interface DescriptionItemProps {
 
 const DescriptionItem = ({ title, content }: DescriptionItemProps) => (
   <div className="mb-[7px] text-black/65 text-[14px] leading-[1.5715]">
-    <p className="inline-block mr-2 text-black/85">{title}:</p>
+    <span className="inline-block mr-2 text-black/85">{title}:</span>
     {content}
   </div>
 );
@@ -309,7 +309,7 @@ const DoctorAuthCard = ({
               size="large"
               onClick={() =>
                 navigate(
-                  `/doctor/medicalRecord?address=${patientDetails.address}&name=${profile?.patient.name}`
+                  `/doctor/appendRecord?address=${patientDetails.address}&name=${profile?.patient.name}`
                 )
               }
             >

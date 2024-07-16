@@ -4,6 +4,7 @@ import type { GetProps } from "antd";
 import { CgPill } from "react-icons/cg";
 import { AiOutlineUser } from "react-icons/ai";
 import { Wallet } from "@project-serum/anchor";
+import { LiaFileMedicalAltSolid } from "react-icons/lia";
 import { fetchProfile, decryptData } from "../utils/util";
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState, useMemo } from "react";
@@ -21,6 +22,7 @@ interface MenuItem {
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
+  disabled?: boolean;
 }
 
 const MenuList = ({ darkTheme }: MenuListProps) => {
@@ -106,8 +108,9 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
     ];
   }, [navigate]);
 
-  const doctorItems = useMemo(
-    () => [
+  const doctorItems = useMemo(() => {
+    const isAppendRecord = location.pathname === "/doctor/appendRecord";
+    return [
       {
         key: "/",
         icon: <AiOutlineHome size={18} />,
@@ -127,6 +130,15 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         onClick: () => navigate("/doctor/profile"),
       },
       {
+        key: "/doctor/appendRecord",
+        icon: <LiaFileMedicalAltSolid size={18} />,
+        label: "Append Record",
+        disabled: !isAppendRecord,
+        onClick: () => {
+          if (!isAppendRecord) navigate("/doctor/appendRecord");
+        },
+      },
+      {
         key: "/settings",
         icon: <AiOutlineSetting size={18} />,
         label: "Settings",
@@ -138,9 +150,8 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         label: "Notification",
         onClick: () => navigate("/notification"),
       },
-    ],
-    [navigate]
-  );
+    ];
+  }, [navigate, location.pathname]);
 
   useEffect(() => {
     if (wallet && connection) {

@@ -13,3 +13,6 @@ export { default as QRReader } from "./patient/QRReader.tsx";
 
 export { default as DoctorAuthCard } from "./doctor/DoctorAuthCard.tsx";
 export { default as PatientAuthorized } from "./doctor/PatientAuthorized.tsx";
+export { default as MedicalRecordForm } from "./doctor/form/MedicalRecord.tsx";
+export { default as MedicationForm } from "./doctor/form/Medication.tsx";
+export { default as LabResultForm } from "./doctor/form/LabResult.tsx";

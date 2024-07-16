@@ -1,7 +1,7 @@
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useEffect, useState } from "react";
 import { fetchProfile } from "../utils/util";
 import { Wallet } from "@project-serum/anchor";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { Welcoming, UserRegister, PatientDashboard, DoctorDashboard } from "./";
 
 const HomePage = () => {

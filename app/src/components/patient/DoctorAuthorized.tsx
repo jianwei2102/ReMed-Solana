@@ -30,7 +30,7 @@ interface DescriptionItemProps {
 
 const DescriptionItem = ({ title, content }: DescriptionItemProps) => (
   <div className="mb-[7px] text-black/65 text-[14px] leading-[1.5715]">
-    <p className="inline-block text-black/85"> {title ? `${title}:` : ""}</p>
+    <span className="inline-block text-black/85"> {title ? `${title}:` : ""}</span>
     <span
       className={`${title ? "ml-2" : ""}`}
       dangerouslySetInnerHTML={{

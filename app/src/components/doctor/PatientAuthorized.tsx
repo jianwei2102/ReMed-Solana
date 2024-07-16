@@ -52,7 +52,9 @@ interface DescriptionItemProps {
 
 const DescriptionItem = ({ title, content }: DescriptionItemProps) => (
   <div className="mb-[7px] text-black/65 text-[14px] leading-[1.5715]">
-    <p className="inline-block text-black/85"> {title ? `${title}:` : ""}</p>
+    <span className="inline-block text-black/85">
+      {title ? `${title}:` : ""}
+    </span>
     <span
       className={`${title ? "ml-2" : ""}`}
       dangerouslySetInnerHTML={{
@@ -175,8 +177,8 @@ const PatientAuthorized = ({
         onClose={onClose}
         open={open}
       >
-        <p className="text-xl mb-6 italic">Patient Profile</p>
-        <p className="mb-4 text-lg font-semibold">
+        <div className="text-xl mb-6 italic">Patient Profile</div>
+        <div className="mb-4 text-lg font-semibold">
           <Avatar
             size={32}
             icon={
@@ -188,7 +190,7 @@ const PatientAuthorized = ({
             className="mr-2"
           />
           Patient
-        </p>
+        </div>
         <Row>
           <Col span={12}>
             <DescriptionItem
@@ -245,7 +247,7 @@ const PatientAuthorized = ({
           </Col>
         </Row>
         <Divider />
-        <p className="mb-4 text-lg font-semibold">
+        <div className="mb-4 text-lg font-semibold">
           <Avatar
             size={32}
             icon={
@@ -257,7 +259,7 @@ const PatientAuthorized = ({
             className="mr-2"
           />
           Next of Kin
-        </p>
+        </div>
         <Row>
           <Col span={12}>
             <DescriptionItem
@@ -312,7 +314,7 @@ const PatientAuthorized = ({
               size="large"
               onClick={() =>
                 navigate(
-                  `/doctor/medicalRecord?address=${patientDetails.address}&name=${profile?.patient.name}`
+                  `/doctor/appendRecord?address=${patientDetails.address}&name=${profile?.patient.name}`
                 )
               }
             >

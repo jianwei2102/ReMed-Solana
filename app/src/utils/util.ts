@@ -300,11 +300,11 @@ const fetchAuthPatient = async (connection: any, wallet: Wallet) => {
 };
 
 const generateHash = (
-  additionalData: String,
+  recordData: String,
   patientPubKey: String,
   doctorPubKey: String
 ) => {
-  const combinedString = `${additionalData}-${patientPubKey}-${doctorPubKey}`;
+  const combinedString = `${recordData}-${patientPubKey}-${doctorPubKey}`;
 
   // Create SHA-256 hash
   const hash = CryptoJS.SHA256(combinedString).toString(CryptoJS.enc.Hex);

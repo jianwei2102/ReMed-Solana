@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Flex, Radio } from "antd";
 import { PatientRegister, DoctorRegister } from "..";
 

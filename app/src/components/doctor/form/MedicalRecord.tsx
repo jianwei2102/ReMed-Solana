@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Wallet } from "@project-serum/anchor";
 import { useCallback, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { appendRecord, fetchProfile, generateHash } from "../../utils/util";
+import { appendRecord, fetchProfile, generateHash } from "../../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Button,
@@ -56,7 +56,7 @@ const MedicalRecord = () => {
       time: format(values.time.toDate(), "hh:mm a"),
     };
     const recordHash = generateHash(
-      record,
+      JSON.stringify(record),
       wallet.publicKey.toBase58(),
       patientAddress
     );
@@ -79,6 +79,9 @@ const MedicalRecord = () => {
 
     messageApi.destroy();
     if (response.status === "success") {
+      // Reset the form fields to their initial state
+      form.resetFields();
+      
       messageApi.open({
         type: "success",
         content: "Record created successfully!",
@@ -101,7 +104,7 @@ const MedicalRecord = () => {
   };
 
   return (
-    <div>
+    <div className="px-4">
       {contextHolder}
       <div className="font-semibold underline text-xl text-[#124588] mb-4">
         Create New Medical Record - {patientName}
