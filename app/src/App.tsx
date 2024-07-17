@@ -27,6 +27,7 @@ import {
   DoctorProfile,
   AppendRecord,
   Settings,
+  ViewRecord,
 } from "./pages";
 import Test from "./pages/test";
 
@@ -109,12 +110,16 @@ function App() {
                       <Route path="/labResults" element={<LabResults />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/settings" element={<Settings />} />
-                      
+
                       <Route path="/test" element={<Test />} />
 
                       <Route
                         path="/doctor/authorization"
                         element={<DoctorAuthorization />}
+                      />
+                      <Route
+                        path="/doctor/viewRecord"
+                        element={<ViewRecord />}
                       />
                       <Route
                         path="/doctor/appendRecord"

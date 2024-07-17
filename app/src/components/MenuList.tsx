@@ -2,6 +2,7 @@ import { Menu } from "antd";
 import Icon from "@ant-design/icons";
 import type { GetProps } from "antd";
 import { CgPill } from "react-icons/cg";
+import { FiFileText } from "react-icons/fi";
 import { AiOutlineUser } from "react-icons/ai";
 import { Wallet } from "@project-serum/anchor";
 import { LiaFileMedicalAltSolid } from "react-icons/lia";
@@ -110,6 +111,8 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
 
   const doctorItems = useMemo(() => {
     const isAppendRecord = location.pathname === "/doctor/appendRecord";
+    const isViewRecord = location.pathname === "/doctor/viewRecord";
+
     return [
       {
         key: "/",
@@ -128,6 +131,15 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         icon: <AiOutlineUser size={18} />,
         label: "Profile",
         onClick: () => navigate("/doctor/profile"),
+      },
+      {
+        key: "/doctor/viewRecord",
+        icon: <FiFileText size={18} />,
+        label: "View Record",
+        disabled: !isViewRecord,
+        onClick: () => {
+          if (!isViewRecord) navigate("/doctor/viewRecord");
+        },
       },
       {
         key: "/doctor/appendRecord",

@@ -305,7 +305,16 @@ const PatientAuthorized = ({
         <Divider />
         <Row>
           <Col span={24} className="flex items-center justify-center ">
-            <Button size="large">View Record</Button>
+            <Button
+              size="large"
+              onClick={() =>
+                navigate(
+                  `/doctor/viewRecord?address=${patientDetails.address}&name=${profile?.patient.name}`
+                )
+              }
+            >
+              View Record
+            </Button>
           </Col>
         </Row>
         <Row className="mt-4">
