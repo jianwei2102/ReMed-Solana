@@ -1,5 +1,6 @@
 export { default as HomePage } from "./HomePage.tsx";
 export { default as Welcoming } from "./Welcoming.tsx";
+export { default as Settings } from "./Settings.tsx";
 export { default as UserRegister } from "./registration/UserRegister.tsx";
 export { default as PatientRegister } from "./registration/PatientRegister.tsx";
 export { default as DoctorRegister } from "./registration/DoctorRegister.tsx";
