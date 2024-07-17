@@ -172,8 +172,8 @@ const DoctorAuthCard = ({
         onClose={onClose}
         open={open}
       >
-        <p className="text-xl mb-6 italic">Patient Profile</p>
-        <p className="mb-4 text-lg font-semibold">
+        <div className="text-xl mb-6 italic">Patient Profile</div>
+        <div className="mb-4 text-lg font-semibold">
           <Avatar
             size={32}
             icon={
@@ -185,7 +185,7 @@ const DoctorAuthCard = ({
             className="mr-2"
           />
           Patient
-        </p>
+        </div>
         <Row>
           <Col span={12}>
             <DescriptionItem
@@ -242,7 +242,7 @@ const DoctorAuthCard = ({
           </Col>
         </Row>
         <Divider />
-        <p className="mb-4 text-lg font-semibold">
+        <div className="mb-4 text-lg font-semibold">
           <Avatar
             size={32}
             icon={
@@ -254,7 +254,7 @@ const DoctorAuthCard = ({
             className="mr-2"
           />
           Next of Kin
-        </p>
+        </div>
         <Row>
           <Col span={12}>
             <DescriptionItem

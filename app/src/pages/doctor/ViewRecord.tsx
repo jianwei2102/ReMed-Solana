@@ -21,10 +21,19 @@ interface Record {
   recordDetails: string;
 }
 
-interface CategorizedRecords {
-  labResults: string[];
-  medicalRecords: string[];
+interface ProcessedRecord {
+  date: string;
+  time: string;
+  location: string;
   medications: any[];
+  current: boolean;
+  recordHash: string;
+}
+
+interface CategorizedRecords {
+  labResults: { data: string; hash: string }[];
+  medicalRecords: { data: string; hash: string }[];
+  medications: ProcessedRecord[];
 }
 
 const ViewRecord = () => {
@@ -52,13 +61,24 @@ const ViewRecord = () => {
       const decryptedData = decryptData(record.recordDetails, "record");
       switch (record.recordType) {
         case "labResults":
-          categorizedRecords.labResults.push(decryptedData);
+          categorizedRecords.labResults.push({
+            data: decryptedData,
+            hash: record.recordHash,
+          });
           break;
         case "medicalRecords":
-          categorizedRecords.medicalRecords.push(decryptedData);
+          categorizedRecords.medicalRecords.push({
+            data: decryptedData,
+            hash: record.recordHash,
+          });
           break;
         case "medication":
-          const processedRecords = processRecords([decryptedData]);
+          const processedRecords = processRecords([decryptedData]).map(
+            (processedRecord: any) => ({
+              ...processedRecord,
+              recordHash: record.recordHash,
+            })
+          );
           categorizedRecords.medications.push(...processedRecords);
           break;
         default:

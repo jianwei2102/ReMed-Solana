@@ -83,7 +83,7 @@ const Profile = () => {
   useEffect(() => {
     const getProfile = async () => {
       if (!connection || !wallet) {
-        console.log("Connection or wallet not found");
+        console.log("Connection or wallet not found!");
         navigate("/");
         return;
       }

@@ -1,9 +1,28 @@
-import React from 'react'
+import React from "react";
+import LabResultItem from "../../patient/LabResultItem";
 
-const LabResult = (record: any) => {
-  return (
-    <div>LabResult</div>
-  )
+interface LabResultProps {
+  records: { hash: string; data: any }[];
 }
 
-export default LabResult
+const LabResult: React.FC<LabResultProps> = ({ records }) => {
+  return (
+    <div className="p-4 border">
+      {records.map((record, index) => (
+        <LabResultItem
+          key={index}
+          record={record.data}
+          recordHash={record.hash}
+        />
+      ))}
+
+      {records?.length === 0 && (
+        <div className="text-center py-4 text-lg text-gray-500 border rounded-xl">
+          No lab results found!
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default LabResult;

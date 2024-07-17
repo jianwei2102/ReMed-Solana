@@ -90,7 +90,7 @@ const Medications = () => {
         ))}
       {medications.filter((medication) => medication.current)?.length === 0 && (
         <div className="text-center py-4 text-lg text-gray-500 border rounded-xl">
-          No current medical record found
+          No current medical record found!
         </div>
       )}
 
@@ -108,7 +108,7 @@ const Medications = () => {
       {medications.filter((medication) => !medication.current)?.length ===
         0 && (
         <div className="text-center py-4 text-lg text-gray-500 border rounded-xl">
-          No past medical record found
+          No past medical record found!
         </div>
       )}
     </div>
