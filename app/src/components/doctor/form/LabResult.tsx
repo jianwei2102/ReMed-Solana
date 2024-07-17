@@ -1,20 +1,19 @@
 import XRay from "./XRay";
 import dayjs from "dayjs";
+import { useState } from "react";
 import { format } from "date-fns";
 import VitalSign from "./VitalSign";
 import BloodCount from "./BloodCount";
 import { Wallet } from "@project-serum/anchor";
+import { useSearchParams } from "react-router-dom";
 import { Button, Form, message, Radio } from "antd";
 import { UploadFile } from "antd/es/upload/interface";
 import { useStorageUpload } from "@thirdweb-dev/react";
-import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { appendRecord, fetchProfile, generateHash } from "../../../utils/util";
+import { appendRecord, generateHash } from "../../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
-const LabResult: React.FC = () => {
+const LabResult = () => {
   const [form] = Form.useForm();
-  const navigate = useNavigate();
   const { connection } = useConnection();
   const [searchParams] = useSearchParams();
   const wallet = useAnchorWallet() as Wallet;
@@ -26,27 +25,6 @@ const LabResult: React.FC = () => {
 
   const patientName = searchParams.get("name") ?? "";
   const patientAddress = searchParams.get("address") ?? "";
-
-  const checkAuthority = useCallback(async () => {
-    if (!connection || !wallet) {
-      navigate("/");
-      return;
-    }
-
-    let response = await fetchProfile(connection, wallet);
-    if (response.status === "success") {
-      const role = (response.data as { role: string }).role;
-      if (role === "patient") {
-        navigate("/");
-      }
-    } else {
-      navigate("/");
-    }
-  }, [connection, wallet, navigate]);
-
-  useEffect(() => {
-    checkAuthority();
-  }, [checkAuthority]);
 
   const uploadToIpfs = async (file: File): Promise<string> => {
     try {

@@ -16,3 +16,6 @@ export { default as PatientAuthorized } from "./doctor/PatientAuthorized.tsx";
 export { default as MedicalRecordForm } from "./doctor/form/MedicalRecord.tsx";
 export { default as MedicationForm } from "./doctor/form/Medication.tsx";
 export { default as LabResultForm } from "./doctor/form/LabResult.tsx";
+export { default as MedicalRecordView } from "./doctor/view/MedicalRecord.tsx";
+export { default as MedicationView } from "./doctor/view/Medication.tsx";
+export { default as LabResultView } from "./doctor/view/LabResult.tsx";

@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
 import { format } from "date-fns";
 import { Wallet } from "@project-serum/anchor";
-import { useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { appendRecord, fetchProfile, generateHash } from "../../../utils/util";
+import { useSearchParams } from "react-router-dom";
+import { appendRecord, generateHash } from "../../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Button,
@@ -19,7 +18,6 @@ const { Panel } = Collapse;
 
 const Medication = () => {
   const [form] = Form.useForm();
-  const navigate = useNavigate();
   const { connection } = useConnection();
   const [searchParams] = useSearchParams();
   const wallet = useAnchorWallet() as Wallet;
@@ -27,27 +25,6 @@ const Medication = () => {
 
   const patientName = searchParams.get("name") ?? "";
   const patientAddress = searchParams.get("address") ?? "";
-
-  const checkAuthority = useCallback(async () => {
-    if (!connection || !wallet) {
-      navigate("/");
-      return;
-    }
-
-    let response = await fetchProfile(connection, wallet);
-    if (response.status === "success") {
-      const role = (response.data as { role: string }).role;
-      if (role === "patient") {
-        navigate("/");
-      }
-    } else {
-      navigate("/");
-    }
-  }, [connection, wallet, navigate]);
-
-  useEffect(() => {
-    checkAuthority();
-  }, [checkAuthority]);
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);

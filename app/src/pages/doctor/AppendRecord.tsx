@@ -1,4 +1,9 @@
 import { Tabs } from "antd";
+import { Wallet } from "@project-serum/anchor";
+import { useNavigate } from "react-router-dom";
+import { fetchProfile } from "../../utils/util";
+import { useCallback, useEffect } from "react";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   LabResultForm,
   MedicalRecordForm,
@@ -6,6 +11,31 @@ import {
 } from "../../components";
 
 const AppendRecord = () => {
+  const navigate = useNavigate();
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet() as Wallet;
+
+  const checkAuthority = useCallback(async () => {
+    if (!connection || !wallet) {
+      navigate("/");
+      return;
+    }
+
+    let response = await fetchProfile(connection, wallet);
+    if (response.status === "success") {
+      const role = (response.data as { role: string }).role;
+      if (role === "patient") {
+        navigate("/");
+      }
+    } else {
+      navigate("/");
+    }
+  }, [connection, wallet, navigate]);
+
+  useEffect(() => {
+    checkAuthority();
+  }, [checkAuthority]);
+
   const tabItems = [
     {
       label: "Medical Records",

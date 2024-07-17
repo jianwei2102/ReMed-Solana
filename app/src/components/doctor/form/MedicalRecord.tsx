@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
 import { format } from "date-fns";
 import { Wallet } from "@project-serum/anchor";
-import { useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { appendRecord, fetchProfile, generateHash } from "../../../utils/util";
+import { useSearchParams } from "react-router-dom";
+import { appendRecord, generateHash } from "../../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Button,
@@ -19,7 +18,6 @@ import {
 
 const MedicalRecord = () => {
   const [form] = Form.useForm();
-  const navigate = useNavigate();
   const { connection } = useConnection();
   const [searchParams] = useSearchParams();
   const wallet = useAnchorWallet() as Wallet;
@@ -27,27 +25,6 @@ const MedicalRecord = () => {
 
   const patientName = searchParams.get("name") ?? "";
   const patientAddress = searchParams.get("address") ?? "";
-
-  const checkAuthority = useCallback(async () => {
-    if (!connection || !wallet) {
-      navigate("/");
-      return;
-    }
-
-    let response = await fetchProfile(connection, wallet);
-    if (response.status === "success") {
-      const role = (response.data as { role: string }).role;
-      if (role === "patient") {
-        navigate("/");
-      }
-    } else {
-      navigate("/");
-    }
-  }, [connection, wallet, navigate]);
-
-  useEffect(() => {
-    checkAuthority();
-  }, [checkAuthority]);
 
   const onFinish = async (values: any) => {
     const record = {
@@ -81,7 +58,7 @@ const MedicalRecord = () => {
     if (response.status === "success") {
       // Reset the form fields to their initial state
       form.resetFields();
-      
+
       messageApi.open({
         type: "success",
         content: "Record created successfully!",
