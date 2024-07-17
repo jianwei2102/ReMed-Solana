@@ -402,7 +402,7 @@ const processRecords = (decryptedRecords: string[]): any[] => {
       // Map medications to include current status
       const mappedMedications = medications.map((med: any) => {
         const medicationDate = new Date(formattedDate);
-        medicationDate.setDate(medicationDate.getDate() + med.duration -1);
+        medicationDate.setDate(medicationDate.getDate() + med.duration);
 
         return {
           ...med,

@@ -81,7 +81,7 @@ const LabResults = () => {
       ))}
 
       {labResults?.length === 0 && (
-        <div className="text-center py-4 text-lg text-gray-500">
+        <div className="text-center py-4 text-lg text-gray-500 border rounded-xl">
           No lab results found!
         </div>
       )}

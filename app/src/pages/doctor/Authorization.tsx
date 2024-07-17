@@ -177,7 +177,7 @@ const Authorization = () => {
       <Divider />
 
       <div className="text-lg font-semibold">
-        All Doctors ({authorized?.length ?? 0})
+        All Patients ({authorized?.length ?? 0})
       </div>
 
       <Space className="flex justify-between items-center mb-4" size="middle">
@@ -203,7 +203,7 @@ const Authorization = () => {
 
       {authorized?.length === 0 && (
         <div className="text-center py-4 text-lg text-gray-500">
-          No authorized doctors
+          No authorized patients
         </div>
       )}
     </div>

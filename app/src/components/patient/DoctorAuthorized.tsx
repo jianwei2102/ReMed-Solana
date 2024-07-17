@@ -1,6 +1,5 @@
 import { FaStar } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import doctorImage from "../../assets/doctor.png";
 import { Wallet, web3 } from "@project-serum/anchor";
 import { Col, Row, Image, Button, message, Drawer, Divider } from "antd";
 import { fetchProfile, revokeDoctor, decryptData } from "../../utils/util";
@@ -21,6 +20,7 @@ interface Profile {
   languagesSpoken: string[];
   contactInformation: string;
   fullName: string;
+  image: string;
 }
 
 interface DescriptionItemProps {
@@ -30,7 +30,9 @@ interface DescriptionItemProps {
 
 const DescriptionItem = ({ title, content }: DescriptionItemProps) => (
   <div className="mb-[7px] text-black/65 text-[14px] leading-[1.5715]">
-    <span className="inline-block text-black/85"> {title ? `${title}:` : ""}</span>
+    <span className="inline-block text-black/85">
+      {title ? `${title}:` : ""}
+    </span>
     <span
       className={`${title ? "ml-2" : ""}`}
       dangerouslySetInnerHTML={{
@@ -105,7 +107,12 @@ const DoctorAuthorized = ({
       <Row className="border mb-4 py-4 rounded-lg">
         {contextHolder}
         <Col span={2} className="flex flex-col justify-center items-center">
-          <Image width={64} className="rounded-full" src={doctorImage} />
+          <Image
+            width={64}
+            className="rounded-full"
+            src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.image}/`}
+            alt="Avatar Image"
+          />
         </Col>
         <Col span={14} className="flex flex-col justify-center items-start">
           <span className="bg-[#CCFCD9] text-[#008124] px-4 rounded-full">

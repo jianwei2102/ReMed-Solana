@@ -88,6 +88,11 @@ const Medications = () => {
             recordHash={medicationHash[index]}
           />
         ))}
+      {medications.filter((medication) => medication.current)?.length === 0 && (
+        <div className="text-center py-4 text-lg text-gray-500 border rounded-xl">
+          No current medical record found
+        </div>
+      )}
 
       <div className="font-semibold text-lg mb-4">Past Medication</div>
       {medications
@@ -99,6 +104,13 @@ const Medications = () => {
             recordHash={medicationHash[index]}
           />
         ))}
+
+      {medications.filter((medication) => !medication.current)?.length ===
+        0 && (
+        <div className="text-center py-4 text-lg text-gray-500 border rounded-xl">
+          No past medical record found
+        </div>
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { Button, message } from "antd";
 import { useEffect, useState } from "react";
 import { Wallet } from "@project-serum/anchor";
 import { useNavigate } from "react-router-dom";
+import { FaUserDoctor } from "react-icons/fa6";
 import { DoctorAuthCard } from "../../components";
 import { fetchAuthPatient } from "../../utils/util";
 import img from "../../assets/patientDashboard.png";
@@ -62,26 +63,6 @@ const DoctorDashboard = () => {
       </div>
 
       <div className="flex flex-row justify-between gap-4">
-        {/* <div className="basis-1/2 border rounded-lg p-4">
-        <div className="flex flew-col justify-between h-12">
-          <div className="flex justify-center items-center">
-            <div className="p-2 bg-[#E8EDFF] rounded-full mr-2">
-              <LuPill size="20" color="1F51FF" />
-            </div>
-            <div className="font-semibold text-xl">Current Medications</div>
-          </div>
-          <div className="flex justify-center items-center">
-            <Button type="link" onClick={() => navigate("/medications")}>
-              View All
-            </Button>
-          </div>
-        </div>
-        <div>
-          <MedicationCard current={true} itemNo={1} />
-          <MedicationCard current={true} itemNo={2} />
-        </div>
-      </div> */}
-
         <div className="basis-1/2 border rounded-lg p-4 min-h-96">
           <div className="flex flew-col justify-between">
             <div className="flex justify-center items-center h-12">
@@ -120,6 +101,40 @@ const DoctorDashboard = () => {
                 No patients authorized yet
               </div>
             )}
+          </div>
+        </div>
+        <div className="basis-1/2 border rounded-lg p-4">
+          <div className="flex flew-col justify-between h-12">
+            <div className="flex justify-center items-center">
+              <div className="p-2 bg-[#E8EDFF] rounded-full mr-2">
+                <FaUserDoctor size="20" color="1F51FF" />
+              </div>
+              <div className="font-semibold text-xl">Doctor Workflow</div>
+            </div>
+          </div>
+          <div className="mt-4 text-lg text-gray-700">
+            <p className="mb-4">
+              <strong>1. Authorization by Patient:</strong> Your wallet needs to
+              be authorized by the patient to view and append medical records.
+            </p>
+            <p className="mb-4">
+              <strong>2. Wallet Address and QR Code:</strong> Find your wallet
+              address and QR code in your profile on the sidebar.
+            </p>
+            <p className="mb-4">
+              <strong>3. Authorization Request:</strong> You may request
+              authorization from the patient, but must wait for the patient to
+              authorize your wallet.
+            </p>
+            <p className="mb-4">
+              <strong>4. View and Append Records:</strong> Once authorized, you
+              can view the patient’s profile and append new records.
+            </p>
+            <p className="mb-4">
+              <strong>5. Modifying Records:</strong> To modify a record, locate
+              it under the patient’s records. You can only modify records you
+              have added.
+            </p>
           </div>
         </div>
       </div>

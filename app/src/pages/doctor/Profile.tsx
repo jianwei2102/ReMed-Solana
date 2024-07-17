@@ -109,7 +109,7 @@ const Profile = () => {
                   icon={
                     <Image
                       src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${details?.image}/`}
-                      alt="Avatar Image"
+                      alt="Profile Image"
                     />
                   }
                 />

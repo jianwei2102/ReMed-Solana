@@ -77,7 +77,7 @@ const MedicalRecords = () => {
       ))}
 
       {medicalRecords?.length === 0 && (
-        <div className="text-center py-4 text-lg text-gray-500">
+        <div className="text-center py-4 text-lg text-gray-500 border rounded-xl">
           No medical record found
         </div>
       )}
