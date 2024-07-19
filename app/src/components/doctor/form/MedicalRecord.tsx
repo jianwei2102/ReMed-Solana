@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { format } from "date-fns";
 import { Wallet } from "@project-serum/anchor";
-import { useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { appendRecord, generateHash } from "../../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
@@ -18,13 +18,14 @@ import {
 
 const MedicalRecord = () => {
   const [form] = Form.useForm();
+  const location = useLocation();
   const { connection } = useConnection();
-  const [searchParams] = useSearchParams();
   const wallet = useAnchorWallet() as Wallet;
+
   const [messageApi, contextHolder] = message.useMessage();
 
-  const patientName = searchParams.get("name") ?? "";
-  const patientAddress = searchParams.get("address") ?? "";
+  const patientName = location.state?.name;
+  const patientAddress = location.state?.address;
 
   const onFinish = async (values: any) => {
     const record = {

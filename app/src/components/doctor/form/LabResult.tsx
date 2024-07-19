@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import VitalSign from "./VitalSign";
 import BloodCount from "./BloodCount";
 import { Wallet } from "@project-serum/anchor";
-import { useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Button, Form, message, Radio } from "antd";
 import { UploadFile } from "antd/es/upload/interface";
 import { useStorageUpload } from "@thirdweb-dev/react";
@@ -14,8 +14,8 @@ import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
 const LabResult = () => {
   const [form] = Form.useForm();
+  const location = useLocation();
   const { connection } = useConnection();
-  const [searchParams] = useSearchParams();
   const wallet = useAnchorWallet() as Wallet;
   const { mutateAsync: upload } = useStorageUpload();
   const [messageApi, contextHolder] = message.useMessage();
@@ -23,8 +23,8 @@ const LabResult = () => {
   const [labType, setLabType] = useState("Vital Signs");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const patientName = searchParams.get("name") ?? "";
-  const patientAddress = searchParams.get("address") ?? "";
+  const patientName = location.state?.name;
+  const patientAddress = location.state?.address;
 
   const uploadToIpfs = async (file: File): Promise<string> => {
     try {

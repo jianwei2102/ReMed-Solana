@@ -1,4 +1,3 @@
-import React from "react";
 import MedicalRecordItem from "../../patient/MedicalRecordItem";
 
 interface MedicalRecordProps {
@@ -6,10 +5,7 @@ interface MedicalRecordProps {
   userWallet: string;
 }
 
-const MedicalRecord: React.FC<MedicalRecordProps> = ({
-  records,
-  userWallet,
-}) => {
+const MedicalRecord = ({ records, userWallet }: MedicalRecordProps) => {
   return (
     <div className="p-4 border">
       {records.map((record, index) => (

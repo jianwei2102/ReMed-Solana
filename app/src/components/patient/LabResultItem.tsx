@@ -162,8 +162,10 @@ const LabResultItem = ({
     <div className="border rounded-lg p-4 mb-4">
       <div className="grid grid-cols-4">
         <div className="flex col-span-3">
-          <span className="font-semibold">{type} - </span>
-          {`${parsedRecord.location}, ${parsedRecord.date}, ${parsedRecord.time}`}
+          <p className="font-semibold">{type}: </p>
+          <p className="truncate pl-4">
+            {`${parsedRecord.location}, ${parsedRecord.date}, ${parsedRecord.time}`}
+          </p>
         </div>
         <div className="flex flex-row-reverse row-span-2">
           {sameDoctor && (

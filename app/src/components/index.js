@@ -19,3 +19,4 @@ export { default as LabResultForm } from "./doctor/form/LabResult.tsx";
 export { default as MedicalRecordView } from "./doctor/view/MedicalRecord.tsx";
 export { default as MedicationView } from "./doctor/view/Medication.tsx";
 export { default as LabResultView } from "./doctor/view/LabResult.tsx";
+export { default as MedicalRecordModify } from "./doctor/modify/MedicalRecord.tsx";

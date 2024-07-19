@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Descriptions, Button } from "antd";
 import type { DescriptionsProps } from "antd";
 
@@ -13,6 +14,7 @@ const MedicalRecordItem = ({
   sameDoctor,
 }: MedicalRecordItemProps) => {
   const parsedRecord = JSON.parse(record);
+  const dataToPass = { name: "John Doe", record: parsedRecord };
 
   const items: DescriptionsProps["items"] = [
     {
@@ -48,9 +50,11 @@ const MedicalRecordItem = ({
         </div>
         <div className="flex flex-row-reverse row-span-2">
           {sameDoctor && (
-            <Button type="primary" className="mr-2 ">
-              Modify Record
-            </Button>
+            <Link to={"/doctor/modifyRecord"} state={dataToPass}>
+              <Button type="primary" className="mr-2 ">
+                Modify Record
+              </Button>
+            </Link>
           )}
         </div>
         <div className="flex col-span-3">

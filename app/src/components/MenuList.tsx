@@ -127,12 +127,6 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         onClick: () => navigate("/doctor/authorization"),
       },
       {
-        key: "/doctor/profile",
-        icon: <AiOutlineUser size={18} />,
-        label: "Profile",
-        onClick: () => navigate("/doctor/profile"),
-      },
-      {
         key: "/doctor/viewRecord",
         icon: <FiFileText size={18} />,
         label: "View Record",
@@ -149,6 +143,12 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         onClick: () => {
           if (!isAppendRecord) navigate("/doctor/appendRecord");
         },
+      },
+      {
+        key: "/doctor/profile",
+        icon: <AiOutlineUser size={18} />,
+        label: "Profile",
+        onClick: () => navigate("/doctor/profile"),
       },
       {
         key: "/settings",

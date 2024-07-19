@@ -1,7 +1,7 @@
 import { Tabs } from "antd";
 import { Wallet, web3 } from "@project-serum/anchor";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   LabResultView,
@@ -40,17 +40,18 @@ interface CategorizedRecords {
 
 const ViewRecord = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { connection } = useConnection();
-  const [searchParams] = useSearchParams();
   const wallet = useAnchorWallet() as Wallet;
+
+  const patientAddress = location.state?.address;
+  const patientName = location.state?.name;
 
   const [records, setRecords] = useState<CategorizedRecords>({
     labResults: [],
     medicalRecords: [],
     medications: [],
   });
-
-  const patientAddress = searchParams.get("address") ?? "";
 
   const handleRecords = useCallback((accountData: Record[]) => {
     const categorizedRecords: CategorizedRecords = {
@@ -166,6 +167,9 @@ const ViewRecord = () => {
 
   return (
     <>
+      <div className="font-semibold underline text-xl text-[#124588] mb-4 pl-2">
+        View Patient's EMRs - {patientName}
+      </div>
       <Tabs type="card" items={tabItems} />
     </>
   );

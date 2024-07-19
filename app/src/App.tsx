@@ -28,6 +28,7 @@ import {
   AppendRecord,
   Settings,
   ViewRecord,
+  ModifyRecord,
 } from "./pages";
 import Test from "./pages/test";
 
@@ -120,6 +121,10 @@ function App() {
                       <Route
                         path="/doctor/viewRecord"
                         element={<ViewRecord />}
+                      />
+                      <Route
+                        path="/doctor/modifyRecord"
+                        element={<ModifyRecord />}
                       />
                       <Route
                         path="/doctor/appendRecord"

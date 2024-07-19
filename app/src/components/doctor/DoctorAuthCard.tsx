@@ -1,5 +1,5 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Wallet, web3 } from "@project-serum/anchor";
 import {
   Button,
@@ -60,7 +60,6 @@ const DoctorAuthCard = ({
   patientDetails,
   revokePatientCallback,
 }: DoctorAuthCardProps) => {
-  const navigate = useNavigate();
   const { connection } = useConnection();
   const wallet = useAnchorWallet() as Wallet;
   const [messageApi, contextHolder] = message.useMessage();
@@ -300,30 +299,28 @@ const DoctorAuthCard = ({
         <Divider />
         <Row>
           <Col span={24} className="flex items-center justify-center ">
-            <Button
-              size="large"
-              onClick={() =>
-                navigate(
-                  `/doctor/viewRecord?address=${patientDetails.address}&name=${profile?.patient.name}`
-                )
-              }
+            <Link
+              to={"/doctor/viewRecord"}
+              state={{
+                address: patientDetails.address,
+                name: profile?.patient.name,
+              }}
             >
-              View Record
-            </Button>
+              <Button size="large">View Record</Button>
+            </Link>
           </Col>
         </Row>
         <Row className="mt-4">
           <Col span={24} className="flex items-center justify-center">
-            <Button
-              size="large"
-              onClick={() =>
-                navigate(
-                  `/doctor/appendRecord?address=${patientDetails.address}&name=${profile?.patient.name}`
-                )
-              }
+            <Link
+              to={"/doctor/appendRecord"}
+              state={{
+                address: patientDetails.address,
+                name: profile?.patient.name,
+              }}
             >
-              Append Record
-            </Button>
+              <Button size="large">Append Record</Button>
+            </Link>
           </Col>
         </Row>
       </Drawer>

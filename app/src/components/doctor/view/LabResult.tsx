@@ -1,4 +1,3 @@
-import React from "react";
 import LabResultItem from "../../patient/LabResultItem";
 
 interface LabResultProps {
@@ -6,7 +5,7 @@ interface LabResultProps {
   userWallet: string;
 }
 
-const LabResult: React.FC<LabResultProps> = ({ records, userWallet }) => {
+const LabResult = ({ records, userWallet }: LabResultProps) => {
   return (
     <div className="p-4 border">
       {records.map((record, index) => (
