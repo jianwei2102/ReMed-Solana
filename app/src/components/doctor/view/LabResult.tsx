@@ -2,10 +2,11 @@ import React from "react";
 import LabResultItem from "../../patient/LabResultItem";
 
 interface LabResultProps {
-  records: { hash: string; data: any }[];
+  records: { hash: string; data: any; addedBy: string }[];
+  userWallet: string;
 }
 
-const LabResult: React.FC<LabResultProps> = ({ records }) => {
+const LabResult: React.FC<LabResultProps> = ({ records, userWallet }) => {
   return (
     <div className="p-4 border">
       {records.map((record, index) => (
@@ -13,6 +14,7 @@ const LabResult: React.FC<LabResultProps> = ({ records }) => {
           key={index}
           record={record.data}
           recordHash={record.hash}
+          sameDoctor={record.addedBy === userWallet}
         />
       ))}
 

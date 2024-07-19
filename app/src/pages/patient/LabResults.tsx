@@ -18,13 +18,13 @@ const LabResults = () => {
     if (response.status === "success") {
       let accountData = (
         response.data as {
-          record: {
+          records: {
             recordHash: string;
             recordType: string;
             recordDetails: string;
           }[];
         }
-      ).record;
+      ).records;
 
       // Filter records where recordType is "labResults"
       let filteredRecords = accountData.filter(
@@ -77,6 +77,7 @@ const LabResults = () => {
           key={index}
           record={record}
           recordHash={labResultsHash[index]}
+          sameDoctor={false}
         />
       ))}
 

@@ -19,6 +19,7 @@ interface Record {
   recordHash: string;
   recordType: string;
   recordDetails: string;
+  addedBy: string;
 }
 
 interface ProcessedRecord {
@@ -28,11 +29,12 @@ interface ProcessedRecord {
   medications: any[];
   current: boolean;
   recordHash: string;
+  addedBy: string;
 }
 
 interface CategorizedRecords {
-  labResults: { data: string; hash: string }[];
-  medicalRecords: { data: string; hash: string }[];
+  labResults: { data: string; hash: string; addedBy: string }[];
+  medicalRecords: { data: string; hash: string; addedBy: string }[];
   medications: ProcessedRecord[];
 }
 
@@ -64,12 +66,14 @@ const ViewRecord = () => {
           categorizedRecords.labResults.push({
             data: decryptedData,
             hash: record.recordHash,
+            addedBy: record.addedBy,
           });
           break;
         case "medicalRecords":
           categorizedRecords.medicalRecords.push({
             data: decryptedData,
             hash: record.recordHash,
+            addedBy: record.addedBy,
           });
           break;
         case "medication":
@@ -77,6 +81,7 @@ const ViewRecord = () => {
             (processedRecord: any) => ({
               ...processedRecord,
               recordHash: record.recordHash,
+              addedBy: record.addedBy,
             })
           );
           categorizedRecords.medications.push(...processedRecords);
@@ -98,7 +103,7 @@ const ViewRecord = () => {
     const patientWallet = { publicKey } as Wallet;
     let response = await fetchRecord(connection, patientWallet);
     if (response.status === "success" && response.data) {
-      const accountData = (response.data as { record: Record[] }).record;
+      const accountData = (response.data as { records: Record[] }).records;
       handleRecords(accountData);
     }
   }, [connection, patientAddress, handleRecords]);
@@ -130,17 +135,32 @@ const ViewRecord = () => {
     {
       label: "Medical Records",
       key: "1",
-      children: <MedicalRecordView records={records.medicalRecords} />,
+      children: (
+        <MedicalRecordView
+          records={records.medicalRecords}
+          userWallet={wallet?.publicKey.toBase58() ?? ""}
+        />
+      ),
     },
     {
       label: "Medications",
       key: "2",
-      children: <MedicationView records={records.medications} />,
+      children: (
+        <MedicationView
+          records={records.medications}
+          userWallet={wallet?.publicKey.toBase58() ?? ""}
+        />
+      ),
     },
     {
       label: "Lab Results",
       key: "3",
-      children: <LabResultView records={records.labResults} />,
+      children: (
+        <LabResultView
+          records={records.labResults}
+          userWallet={wallet?.publicKey.toBase58() ?? ""}
+        />
+      ),
     },
   ];
 

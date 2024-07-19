@@ -7,9 +7,16 @@ interface MedicationRecord {
   medications: any[];
   recordHash: string;
   time: string;
+  addedBy: string;
 }
 
-const Medication = ({ records }: { records: MedicationRecord[] }) => {
+const Medication = ({
+  records,
+  userWallet,
+}: {
+  records: MedicationRecord[];
+  userWallet: string;
+}) => {
   return (
     <div className="overflow-y-auto h-full p-4 border">
       <div className="font-semibold text-lg mb-4">Current Medications</div>
@@ -20,6 +27,7 @@ const Medication = ({ records }: { records: MedicationRecord[] }) => {
             key={index}
             medication={medication}
             recordHash={medication.recordHash}
+            sameDoctor={medication.addedBy === userWallet}
           />
         ))}
       {records.filter((medication) => medication.current)?.length === 0 && (
@@ -36,6 +44,7 @@ const Medication = ({ records }: { records: MedicationRecord[] }) => {
             key={index}
             medication={medication}
             recordHash={medication.recordHash}
+            sameDoctor={false}
           />
         ))}
 

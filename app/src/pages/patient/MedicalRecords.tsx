@@ -18,13 +18,14 @@ const MedicalRecords = () => {
     if (response.status === "success") {
       let accountData = (
         response.data as {
-          record: {
+          records: {
             recordHash: string;
             recordType: string;
             recordDetails: string;
+            addedBy: string;
           }[];
         }
-      ).record;
+      ).records;
 
       // Filter records where recordType is "medicalRecords"
       let filteredRecords = accountData
@@ -33,7 +34,12 @@ const MedicalRecords = () => {
 
       // Decrypt recordDetails
       let decryptedRecords = filteredRecords.map((record) => {
-        return decryptData(record.recordDetails, "record");
+        return decryptData(record.recordDetails, "record").map(
+          (processedRecord: any) => ({
+            ...processedRecord,
+            recordHash: record.recordHash,
+          })
+        );;
       });
 
       setMedicalRecords(decryptedRecords);
@@ -72,7 +78,8 @@ const MedicalRecords = () => {
         <MedicalRecordItem
           key={index}
           record={record}
-          recordsHash={medicalRecordsHash[index]}
+          recordHash={medicalRecordsHash[index]}
+          sameDoctor={false}
         />
       ))}
 

@@ -46,13 +46,13 @@ const PatientDashboard = () => {
         if (response.status === "success") {
           let accountData = (
             response.data as {
-              record: {
+              records: {
                 recordHash: string;
                 recordType: string;
                 recordDetails: string;
               }[];
             }
-          ).record;
+          ).records;
 
           // Filter records where recordType is "medication"
           let filteredRecords = accountData.filter(

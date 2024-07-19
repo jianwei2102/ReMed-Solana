@@ -111,7 +111,7 @@ pub mod remed {
             return Err(ErrorCode::AuthorizationNotExist.into());
         }
 
-        let emr_list = &mut ctx.accounts.emr_list.record;
+        let emr_list = &mut ctx.accounts.emr_list.records;
         if emr_list
             .iter()
             .any(|med| med.record_hash == record_hash)
@@ -147,7 +147,7 @@ pub mod remed {
         }
 
         // Find the record with the current_record_hash and replace it
-        let emr_list = &mut ctx.accounts.emr_list.record;
+        let emr_list = &mut ctx.accounts.emr_list.records;
         if let Some(index) = emr_list
             .iter()
             .position(|med| med.record_hash == current_record_hash)
@@ -272,7 +272,7 @@ pub struct EMR {
 
 #[account]
 pub struct EMRList {
-    record: Vec<EMR>,
+    records: Vec<EMR>,
 }
 
 #[error_code]

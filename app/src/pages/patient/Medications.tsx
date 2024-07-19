@@ -26,13 +26,14 @@ const Medications = () => {
     if (response.status === "success") {
       let accountData = (
         response.data as {
-          record: {
+          records: {
             recordHash: string;
             recordType: string;
             recordDetails: string;
+            addedBy: string;
           }[];
         }
-      ).record;
+      ).records;
 
       // Filter records where recordType is "medication"
       let filteredRecords = accountData
@@ -45,7 +46,12 @@ const Medications = () => {
       });
 
       // Process records
-      const processedRecords = processRecords(decryptedRecords);
+      const processedRecords = processRecords(decryptedRecords).map(
+        (processedRecord: any) => ({
+          ...processedRecord,
+          addedBy: response.data.addedBy,
+        })
+      );
 
       setMedications(processedRecords);
       setMedicationHash(filteredRecords.map((record) => record.recordHash));
@@ -86,6 +92,7 @@ const Medications = () => {
             key={index}
             medication={medication}
             recordHash={medicationHash[index]}
+            sameDoctor={medication.addedBy === wallet.publicKey.toBase58()}
           />
         ))}
       {medications.filter((medication) => medication.current)?.length === 0 && (
@@ -102,6 +109,7 @@ const Medications = () => {
             key={index}
             medication={medication}
             recordHash={medicationHash[index]}
+            sameDoctor={false}
           />
         ))}
 

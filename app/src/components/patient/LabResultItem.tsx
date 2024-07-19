@@ -1,11 +1,16 @@
-import { Descriptions, Space, Image } from "antd";
+import { Descriptions, Image, Button } from "antd";
 
 interface LabResultItemProps {
   record: string;
   recordHash: string;
+  sameDoctor: boolean;
 }
 
-const LabResultItem = ({ record, recordHash }: LabResultItemProps) => {
+const LabResultItem = ({
+  record,
+  recordHash,
+  sameDoctor,
+}: LabResultItemProps) => {
   const parsedRecord = JSON.parse(record);
 
   // Reference ranges for Blood Count
@@ -121,7 +126,10 @@ const LabResultItem = ({ record, recordHash }: LabResultItemProps) => {
             children: (
               <div className="flex gap-4">
                 {parsedRecord.xrayImages.map((image: string, index: number) => (
-                  <div key={index} className="flex flex-col justify-center items-center">
+                  <div
+                    key={index}
+                    className="flex flex-col justify-center items-center"
+                  >
                     <Image
                       src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${image}/`}
                       alt="X-Ray Image"
@@ -152,16 +160,24 @@ const LabResultItem = ({ record, recordHash }: LabResultItemProps) => {
 
   return (
     <div className="border rounded-lg p-4 mb-4">
-      <Space size={2} direction="vertical">
-        <div>
+      <div className="grid grid-cols-4">
+        <div className="flex col-span-3">
           <span className="font-semibold">{type} - </span>
           {`${parsedRecord.location}, ${parsedRecord.date}, ${parsedRecord.time}`}
         </div>
-        <div>
-          <span className="font-semibold">Transaction Hash:</span> {recordHash}
+        <div className="flex flex-row-reverse row-span-2">
+          {sameDoctor && (
+            <Button type="primary" className="mr-2 ">
+              Modify Record
+            </Button>
+          )}
+        </div>
+        <div className="flex col-span-3">
+          <p className="font-semibold"> Record Hash: </p>
+          <p className="truncate pl-3">{` ${recordHash}`}</p>
         </div>
         <Descriptions
-          className="bg-[#D2DDEA] rounded-lg px-4 pt-2 mt-2"
+          className="bg-[#D2DDEA] rounded-lg px-4 pt-2 mt-2 col-span-4"
           items={getDescriptionItems(type)}
           column={type === "Vital Signs" ? 3 : type === "Blood Count" ? 2 : 1}
           layout="vertical"
@@ -238,7 +254,7 @@ const LabResultItem = ({ record, recordHash }: LabResultItemProps) => {
             </div>
           </div>
         )}
-      </Space>
+      </div>
     </div>
   );
 };

@@ -272,7 +272,7 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "record",
+            "name": "records",
             "type": {
               "vec": {
                 "defined": "EMR"
