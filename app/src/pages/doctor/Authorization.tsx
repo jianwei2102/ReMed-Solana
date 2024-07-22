@@ -7,7 +7,11 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchAuthPatient, fetchProfile } from "../../utils/util";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { PatientAuthorized, QRReader, PatientRequested } from "../../components";
+import {
+  PatientAuthorized,
+  QRReader,
+  PatientRequested,
+} from "../../components";
 import {
   Button,
   Divider,
@@ -39,8 +43,8 @@ const Authorization = () => {
   const [open, setOpen] = useState(false);
   const [patientAddress, setPatientAddress] = useState("");
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [authorized, setAuthorized] = useState<AuthorizedPatient[]>([]);
   const [requested, setRequested] = useState<RequestedPatient[]>([]);
+  const [authorized, setAuthorized] = useState<AuthorizedPatient[]>([]);
   const [segmentedValue, setSegmentedValue] = useState<string>("View All");
 
   const getAuthPatient = useCallback(async () => {
@@ -57,11 +61,16 @@ const Authorization = () => {
 
     try {
       const response = await axios.get("http://localhost:4000/doctorRequests");
-      const requests = response.data.map((request: any) => ({
-        id: request._id,
-        address: request.patientAddress,
-        date: request.requestDate,
-      }));
+      const requests = response.data
+        .filter(
+          (request: any) =>
+            request.doctorAddress === wallet.publicKey.toBase58()
+        )
+        .map((request: any) => ({
+          id: request._id,
+          address: request.patientAddress,
+          date: request.requestDate,
+        }));
       setRequested(requests);
       console.log("Request fetched:", response.data);
     } catch (error) {

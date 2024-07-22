@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { format } from "date-fns";
 import { FaInfo } from "react-icons/fa";
@@ -23,8 +24,8 @@ import {
 const PatientRegister = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const wallet = useAnchorWallet();
   const { connection } = useConnection();
+  const wallet = useAnchorWallet() as Wallet;
   const { mutateAsync: upload } = useStorageUpload();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -90,7 +91,7 @@ const PatientRegister = () => {
     } catch (error) {
       console.error("Error uploading file(s) to IPFS:", error);
     }
-    
+
     messageApi.open({
       type: "loading",
       content: "Transaction in progress..",
@@ -99,10 +100,16 @@ const PatientRegister = () => {
 
     let response = await createProfile(
       connection,
-      wallet as Wallet,
+      wallet,
       "patient",
       JSON.stringify(formattedValues)
     );
+
+    await axios.post("http://localhost:4000/users", {
+      username: formattedValues.patient.name,
+      address: wallet.publicKey.toBase58(),
+      role: "doctor",
+    });
 
     messageApi.destroy();
     if (response.status === "success") {
