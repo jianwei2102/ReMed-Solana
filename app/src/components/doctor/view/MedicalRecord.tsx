@@ -1,7 +1,13 @@
 import MedicalRecordItem from "../../patient/MedicalRecordItem";
 
 interface MedicalRecordProps {
-  records: { hash: string; data: any; addedBy: string }[];
+  records: {
+    hash: string;
+    data: any;
+    addedBy: string;
+    patientName: string;
+    patientAddress: string;
+  }[];
   userWallet: string;
 }
 
@@ -11,8 +17,7 @@ const MedicalRecord = ({ records, userWallet }: MedicalRecordProps) => {
       {records.map((record, index) => (
         <MedicalRecordItem
           key={index}
-          record={record.data}
-          recordHash={record.hash}
+          record={record}
           sameDoctor={record.addedBy === userWallet}
         />
       ))}

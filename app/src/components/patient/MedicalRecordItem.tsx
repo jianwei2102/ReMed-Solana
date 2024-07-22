@@ -2,19 +2,28 @@ import { Link } from "react-router-dom";
 import { Descriptions, Button } from "antd";
 import type { DescriptionsProps } from "antd";
 
+interface record {
+  hash: string;
+  data: any;
+  addedBy: string;
+  patientName: string;
+  patientAddress: string;
+}
 interface MedicalRecordItemProps {
-  record: string;
-  recordHash: string;
+  record: record;
   sameDoctor: boolean;
 }
 
-const MedicalRecordItem = ({
-  record,
-  recordHash,
-  sameDoctor,
-}: MedicalRecordItemProps) => {
-  const parsedRecord = JSON.parse(record);
-  const dataToPass = { name: "John Doe", record: parsedRecord };
+const MedicalRecordItem = ({ record, sameDoctor }: MedicalRecordItemProps) => {
+  const parsedRecord = JSON.parse(record.data);
+  // console.log(parsedRecord);
+  const dataToPass = {
+    type: "medicalRecord",
+    recordHash: record.hash,
+    patientName: record.patientName,
+    patientAddress: record.patientAddress,
+    record: parsedRecord,
+  };
 
   const items: DescriptionsProps["items"] = [
     {
@@ -59,7 +68,7 @@ const MedicalRecordItem = ({
         </div>
         <div className="flex col-span-3">
           <p className="font-semibold"> Record Hash: </p>
-          <p className="truncate pl-3">{` ${recordHash}`}</p>
+          <p className="truncate pl-3">{` ${record.hash}`}</p>
         </div>
         <Descriptions
           className="bg-[#D2DDEA] rounded-lg px-4 pt-2 mt-2 col-span-4"

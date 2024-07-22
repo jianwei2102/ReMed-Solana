@@ -317,7 +317,7 @@ const appendRecord = async (
   recordHash: string,
   record: string,
   patientAddress: string,
-  medicalRecords: string
+  recordType: string
 ) => {
   try {
     console.log(record.toString());
@@ -343,7 +343,7 @@ const appendRecord = async (
     );
 
     await program.methods
-      .appendRecord(recordHash, encryptedRecord, medicalRecords)
+      .appendRecord(recordHash, encryptedRecord, recordType)
       .accounts({
         patientAuthList: patientAuthList,
         emrList: recordList,
@@ -358,6 +358,59 @@ const appendRecord = async (
     return { status: "success", data: recordHash };
   } catch (error) {
     console.error("Error adding record:", error);
+    return { status: "error", data: error };
+  }
+};
+
+const modifyRecord = async (
+  connection: any,
+  wallet: Wallet,
+  currentRecordHash: string,
+  newRecordHash: string,
+  record: string,
+  patientAddress: string
+) => {
+  try {
+    console.log(record.toString());
+    const encryptedRecord = encryptData(record, "record");
+
+    const anchorProvider = getProvider(connection, wallet);
+    const program = new Program(idl as Idl, programID, anchorProvider);
+
+    const patientPub = new PublicKey(patientAddress);
+    const patientSeeds = [
+      Buffer.from("patient_auth_list"),
+      patientPub.toBuffer(),
+    ];
+    const [patientAuthList] = await PublicKey.findProgramAddress(
+      patientSeeds,
+      program.programId
+    );
+
+    const recordSeeds = [Buffer.from("emr_list"), patientPub.toBuffer()];
+    const [recordList] = await PublicKey.findProgramAddress(
+      recordSeeds,
+      program.programId
+    );
+
+    await program.methods
+      .modifyRecord(currentRecordHash, newRecordHash, encryptedRecord)
+      .accounts({
+        patientAuthList: patientAuthList,
+        emrList: recordList,
+        signer: anchorProvider.wallet.publicKey,
+        patient: patientPub,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([])
+      .rpc();
+
+    console.log(
+      `Modified new record ${newRecordHash} to the patient ${patientAddress}.`
+    );
+    return { status: "success", data: newRecordHash };
+  } catch (error) {
+    console.error("Error modify record:", error);
     return { status: "error", data: error };
   }
 };
@@ -447,6 +500,7 @@ export {
   revokePatient,
   generateHash,
   appendRecord,
+  modifyRecord,
   fetchRecord,
   processRecords,
 };

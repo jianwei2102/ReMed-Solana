@@ -5,46 +5,52 @@ import { useCallback, useEffect, useState } from "react";
 import { decryptData, fetchProfile, fetchRecord } from "../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
+interface Record {
+  recordHash: string;
+  recordType: string;
+  recordDetails: string;
+  addedBy: string;
+}
+
+interface MedicalRecord {
+  data: string;
+  hash: string;
+  addedBy: string;
+  patientAddress: string;
+  patientName: string;
+}
+
 const MedicalRecords = () => {
   const navigate = useNavigate();
   const { connection } = useConnection();
   const wallet = useAnchorWallet() as Wallet;
 
-  const [medicalRecords, setMedicalRecords] = useState<string[]>([]);
-  const [medicalRecordsHash, setMedicalRecordsHash] = useState<string[]>([]);
+  const [medicalRecords, setMedicalRecords] = useState<MedicalRecord[]>([]);
 
   const getMedicalRecords = useCallback(async () => {
     let response = await fetchRecord(connection, wallet as Wallet);
     if (response.status === "success") {
       let accountData = (
         response.data as {
-          records: {
-            recordHash: string;
-            recordType: string;
-            recordDetails: string;
-            addedBy: string;
-          }[];
+          records: Record[];
         }
       ).records;
 
-      // Filter records where recordType is "medicalRecords"
-      let filteredRecords = accountData
-        .filter((record) => record.recordType === "medicalRecords")
-        .reverse();
+      // Filter records where recordType is "medicalRecord"
+      let filteredRecords = accountData.filter(
+        (record) => record.recordType === "medicalRecords"
+      );
 
-      // Decrypt recordDetails
-      let decryptedRecords = filteredRecords.map((record) => {
-        return decryptData(record.recordDetails, "record").map(
-          (processedRecord: any) => ({
-            ...processedRecord,
-            recordHash: record.recordHash,
-          })
-        );;
-      });
+      // Decrypt and map recordDetails
+      let decryptedRecords = filteredRecords.map((record) => ({
+        data: decryptData(record.recordDetails, "record"),
+        hash: record.recordHash,
+        addedBy: record.addedBy,
+        patientAddress: "",
+        patientName: "",
+      }));
 
-      setMedicalRecords(decryptedRecords);
-      setMedicalRecordsHash(filteredRecords.map((record) => record.recordHash));
-      // console.log(medicalRecordsHash);
+      setMedicalRecords(decryptedRecords.reverse());
     }
   }, [connection, wallet]);
 
@@ -75,15 +81,10 @@ const MedicalRecords = () => {
     <div>
       <div className="font-semibold text-xl mb-4">Medical Record</div>
       {medicalRecords.map((record, index) => (
-        <MedicalRecordItem
-          key={index}
-          record={record}
-          recordHash={medicalRecordsHash[index]}
-          sameDoctor={false}
-        />
+        <MedicalRecordItem key={index} record={record} sameDoctor={false} />
       ))}
 
-      {medicalRecords?.length === 0 && (
+      {medicalRecords.length === 0 && (
         <div className="text-center py-4 text-lg text-gray-500 border rounded-xl">
           No medical record found!
         </div>

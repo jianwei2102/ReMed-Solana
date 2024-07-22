@@ -1,15 +1,19 @@
 import { useLocation } from "react-router-dom";
+import {
+  LabResultModify,
+  MedicalRecordModify,
+  MedicationModify,
+} from "../../components";
 
 const ModifyRecord = () => {
   const location = useLocation();
-
   console.log("Props passed to ModifyRecord:", location.state);
 
   return (
     <div>
-      <h2>Modify Record</h2>
-      <p>Name: {location.state?.name}</p>
-      <p>Age: {location.state?.age}</p>
+      {location.state?.type === "medicalRecord" && <MedicalRecordModify />}
+      {location.state?.type === "labResult" && <LabResultModify />}
+      {location.state?.type === "medication" && <MedicationModify />}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("Eko2SkVj9jQ39wLAzFgBReJqXZp2Ht6hDcRgBftvgkbd");
+declare_id!("7dB64fVpLmvmNWMgjNknDfeJvzovRauQfAc1uGsGgjdH");
 
 #[program]
 pub mod remed {
@@ -145,22 +145,23 @@ pub mod remed {
         {
             return Err(ErrorCode::Unauthorized.into());
         }
-
+    
         // Find the record with the current_record_hash and replace it
         let emr_list = &mut ctx.accounts.emr_list.records;
         if let Some(index) = emr_list
             .iter()
             .position(|med| med.record_hash == current_record_hash)
         {
-            // Check if the record added by the signer
+            // Check if the record was added by the signer
             if emr_list[index].added_by == doctor_address {
-                let new_medication = EMR {
+                let new_emr = EMR {
                     record_hash: new_record_hash,
                     record_details,
                     record_type: emr_list[index].record_type.clone(),
                     added_by: doctor_address,
                 };
-                emr_list[index] = new_medication;
+                emr_list.remove(index); // Remove the old record
+                emr_list.push(new_emr); // Add the new record to the end
                 Ok(())
             } else {
                 return Err(ErrorCode::InvalidRecordPermission.into()); // Error code for invalid record permission
@@ -168,7 +169,7 @@ pub mod remed {
         } else {
             return Err(ErrorCode::RecordNotFound.into()); // Error code for record not found
         }
-    }
+    }    
 }
 
 #[derive(Accounts)]
