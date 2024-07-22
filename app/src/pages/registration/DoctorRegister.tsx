@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { FaInfo } from "react-icons/fa";
 import { Wallet } from "@project-serum/anchor";
@@ -91,6 +92,12 @@ const DoctorRegister = () => {
       "doctor",
       JSON.stringify(formattedValues)
     );
+
+    await axios.post("http://localhost:4000/users", {
+      username: combinedFullName,
+      address: wallet.publicKey.toBase58(),
+      role: "doctor",
+    });
 
     messageApi.destroy();
     if (response.status === "success") {

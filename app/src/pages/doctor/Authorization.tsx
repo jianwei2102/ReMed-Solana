@@ -1,10 +1,13 @@
+import axios from "axios";
+import dayjs from "dayjs";
+import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { Wallet, web3 } from "@project-serum/anchor";
 import { useCallback, useEffect, useState } from "react";
-import { PatientAuthorized, QRReader } from "../../components";
 import { fetchAuthPatient, fetchProfile } from "../../utils/util";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { PatientAuthorized, QRReader, PatientRequested } from "../../components";
 import {
   Button,
   Divider,
@@ -21,6 +24,12 @@ interface AuthorizedPatient {
   date: string;
 }
 
+interface RequestedPatient {
+  id: string;
+  address: string;
+  date: string;
+}
+
 const Authorization = () => {
   const navigate = useNavigate();
   const { connection } = useConnection();
@@ -31,6 +40,7 @@ const Authorization = () => {
   const [patientAddress, setPatientAddress] = useState("");
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [authorized, setAuthorized] = useState<AuthorizedPatient[]>([]);
+  const [requested, setRequested] = useState<RequestedPatient[]>([]);
   const [segmentedValue, setSegmentedValue] = useState<string>("View All");
 
   const getAuthPatient = useCallback(async () => {
@@ -43,6 +53,19 @@ const Authorization = () => {
           )?.authorized.reverse()
         );
       }
+    }
+
+    try {
+      const response = await axios.get("http://localhost:4000/doctorRequests");
+      const requests = response.data.map((request: any) => ({
+        id: request._id,
+        address: request.patientAddress,
+        date: request.requestDate,
+      }));
+      setRequested(requests);
+      console.log("Request fetched:", response.data);
+    } catch (error) {
+      console.error("Error fetching request:", error);
     }
   }, [connection, wallet]);
 
@@ -66,7 +89,17 @@ const Authorization = () => {
   }, [connection, wallet, navigate, getAuthPatient]);
 
   const checkPatientRole = async (patientAddress: string) => {
-    // Check if the given address is a patient
+    const isAuthorized = authorized.some(
+      (patient) => patient.address === patientAddress
+    );
+    const isRequested = requested.some(
+      (patient) => patient.address === patientAddress
+    );
+
+    if (isAuthorized || isRequested) {
+      return false; // Already authorized, so return false
+    }
+
     try {
       const publicKey = new web3.PublicKey(patientAddress);
       const patientWallet = { publicKey } as Wallet;
@@ -91,8 +124,15 @@ const Authorization = () => {
   };
 
   const authorizePatient = async (patientAddress: string) => {
+    messageApi.open({
+      type: "loading",
+      content: "Transaction in progress..",
+      duration: 0,
+    });
+
     let validPatientAddress = await checkPatientRole(patientAddress);
     if (!validPatientAddress) {
+      messageApi.destroy();
       messageApi.open({
         type: "error",
         content: "Invalid patient address",
@@ -101,10 +141,31 @@ const Authorization = () => {
       return;
     }
 
-    messageApi.open({
-      type: "success",
-      content: "Patient request authorized successfully",
+    let response = await axios.post("http://localhost:4000/doctorRequests", {
+      patientAddress: patientAddress,
+      doctorAddress: wallet.publicKey.toBase58(),
+      requestDate: format(dayjs().toDate(), "MMMM d, yyyy"),
     });
+
+    messageApi.destroy();
+    if (response.status === 200) {
+      const newRequested: RequestedPatient = {
+        id: response.data._id, // Assuming _id is returned from the backend
+        address: response.data.patientAddress,
+        date: response.data.requestDate,
+      };
+
+      setRequested((prev) => [...prev, newRequested]);
+      messageApi.open({
+        type: "success",
+        content: "Patient request authorized successfully",
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Error authorizing patient request",
+      });
+    }
   };
 
   const handleScanSuccess = (result: string) => {
@@ -133,9 +194,101 @@ const Authorization = () => {
     });
   };
 
+  const revokeRequestCallback = async (patientId: string) => {
+    try {
+      await axios.delete(`http://localhost:4000/doctorRequests/${patientId}`);
+      setRequested((prev) => prev.filter((item) => item.id !== patientId));
+      messageApi.open({
+        type: "success",
+        content: "Patient revoked successfully",
+      });
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Error revoking patient request",
+      });
+    }
+  };
+
   useEffect(() => {
     checkAuthority();
   }, [checkAuthority]);
+
+  const displayData = () => {
+    if (segmentedValue === "View All") {
+      return (
+        <>
+          {authorized.length > 0 && (
+            <>
+              <div className="text-lg font-semibold">Authorized Patients</div>
+              {authorized.map((item, index) => (
+                <PatientAuthorized
+                  key={index}
+                  patientDetails={
+                    item as unknown as { address: string; date: string }
+                  }
+                  revokePatientCallback={revokePatientCallback}
+                />
+              ))}
+            </>
+          )}
+          {requested.length > 0 && (
+            <>
+              <div className="text-lg font-semibold">Pending Requests</div>
+              {requested.map((item) => (
+                <PatientRequested
+                  key={item.id}
+                  patientDetails={item}
+                  revokePatientCallback={revokeRequestCallback}
+                />
+              ))}
+            </>
+          )}
+          {authorized.length === 0 && requested.length === 0 && (
+            <div className="text-center py-4 text-lg text-gray-500">
+              No patients
+            </div>
+          )}
+        </>
+      );
+    }
+
+    if (segmentedValue === "Authorized") {
+      return authorized.length > 0 ? (
+        authorized.map((item, index) => (
+          <PatientAuthorized
+            key={index}
+            patientDetails={
+              item as unknown as { address: string; date: string }
+            }
+            revokePatientCallback={revokePatientCallback}
+          />
+        ))
+      ) : (
+        <div className="text-center py-4 text-lg text-gray-500">
+          No authorized patients
+        </div>
+      );
+    }
+
+    if (segmentedValue === "Pending") {
+      return requested.length > 0 ? (
+        requested.map((item) => (
+          <PatientRequested
+            key={item.id}
+            patientDetails={item}
+            revokePatientCallback={revokeRequestCallback}
+          />
+        ))
+      ) : (
+        <div className="text-center py-4 text-lg text-gray-500">
+          No pending requests
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div>
@@ -177,35 +330,27 @@ const Authorization = () => {
       <Divider />
 
       <div className="text-lg font-semibold">
-        All Patients ({authorized?.length ?? 0})
+        All Patients (
+        {segmentedValue === "View All"
+          ? authorized.length + requested.length
+          : segmentedValue === "Authorized"
+            ? authorized.length
+            : requested.length}
+        )
       </div>
 
       <Space className="flex justify-between items-center mb-4" size="middle">
         <Segmented
           options={["View All", "Authorized", "Pending"]}
-          value={segmentedValue}
-          onChange={setSegmentedValue}
+          onChange={(value) => setSegmentedValue(value)}
         />
-
         <Flex gap="small">
           <Input placeholder="Search" prefix={<SearchOutlined />} />
           <Button icon={<FilterOutlined />}>Filter</Button>
         </Flex>
       </Space>
 
-      {authorized?.map((item, index) => (
-        <PatientAuthorized
-          key={index}
-          patientDetails={item as unknown as { address: string; date: string }}
-          revokePatientCallback={revokePatientCallback}
-        />
-      ))}
-
-      {authorized?.length === 0 && (
-        <div className="text-center py-4 text-lg text-gray-500">
-          No authorized patients
-        </div>
-      )}
+      {displayData()}
     </div>
   );
 };
