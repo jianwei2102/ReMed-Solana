@@ -1,7 +1,13 @@
 import LabResultItem from "../../patient/LabResultItem";
 
 interface LabResultProps {
-  records: { hash: string; data: any; addedBy: string }[];
+  records: {
+    data: string;
+    hash: string;
+    addedBy: string;
+    patientAddress: string;
+    patientName: string;
+  }[];
   userWallet: string;
 }
 
@@ -11,8 +17,7 @@ const LabResult = ({ records, userWallet }: LabResultProps) => {
       {records.map((record, index) => (
         <LabResultItem
           key={index}
-          record={record.data}
-          recordHash={record.hash}
+          record={record}
           sameDoctor={record.addedBy === userWallet}
         />
       ))}

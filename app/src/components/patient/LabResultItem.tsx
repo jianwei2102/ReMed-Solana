@@ -1,17 +1,29 @@
+import { Link } from "react-router-dom";
 import { Descriptions, Image, Button } from "antd";
 
 interface LabResultItemProps {
-  record: string;
-  recordHash: string;
+  record: {
+    data: string;
+    hash: string;
+    addedBy: string;
+    patientAddress: string;
+    patientName: string;
+  };
   sameDoctor: boolean;
 }
 
-const LabResultItem = ({
-  record,
-  recordHash,
-  sameDoctor,
-}: LabResultItemProps) => {
-  const parsedRecord = JSON.parse(record);
+const LabResultItem = ({ record, sameDoctor }: LabResultItemProps) => {
+  const parsedRecord = JSON.parse(record.data);
+
+  const type = parsedRecord.type || "";
+  const dataToPass = {
+    type: "labResult",
+    labType: type,
+    recordHash: record.hash,
+    patientName: record.patientName,
+    patientAddress: record.patientAddress,
+    record: parsedRecord,
+  };
 
   // Reference ranges for Blood Count
   const referenceRanges = {
@@ -156,8 +168,6 @@ const LabResultItem = ({
     }
   };
 
-  const type = parsedRecord.type || "";
-
   return (
     <div className="border rounded-lg p-4 mb-4">
       <div className="grid grid-cols-4">
@@ -169,14 +179,16 @@ const LabResultItem = ({
         </div>
         <div className="flex flex-row-reverse row-span-2">
           {sameDoctor && (
-            <Button type="primary" className="mr-2 ">
-              Modify Record
-            </Button>
+            <Link to={"/doctor/modifyRecord"} state={dataToPass}>
+              <Button type="primary" className="mr-2 ">
+                Modify Record
+              </Button>
+            </Link>
           )}
         </div>
         <div className="flex col-span-3">
           <p className="font-semibold"> Record Hash: </p>
-          <p className="truncate pl-3">{` ${recordHash}`}</p>
+          <p className="truncate pl-3">{` ${record.hash}`}</p>
         </div>
         <Descriptions
           className="bg-[#D2DDEA] rounded-lg px-4 pt-2 mt-2 col-span-4"

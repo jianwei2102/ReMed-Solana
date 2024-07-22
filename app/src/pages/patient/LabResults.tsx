@@ -5,24 +5,33 @@ import { useCallback, useEffect, useState } from "react";
 import { decryptData, fetchProfile, fetchRecord } from "../../utils/util";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
+interface Record {
+  recordHash: string;
+  recordType: string;
+  recordDetails: string;
+  addedBy: string;
+}
+
+interface LabResultItemProps {
+  data: string;
+  hash: string;
+  addedBy: string;
+  patientAddress: string;
+  patientName: string;
+}
 const LabResults = () => {
   const navigate = useNavigate();
   const { connection } = useConnection();
   const wallet = useAnchorWallet() as Wallet;
 
-  const [labResults, setLabResults] = useState<string[]>([]);
-  const [labResultsHash, setLabResultsHash] = useState<string[]>([]);
+  const [labResults, setLabResults] = useState<LabResultItemProps[]>([]);
 
   const getLabResults = useCallback(async () => {
     let response = await fetchRecord(connection, wallet);
     if (response.status === "success") {
       let accountData = (
         response.data as {
-          records: {
-            recordHash: string;
-            recordType: string;
-            recordDetails: string;
-          }[];
+          records: Record[];
         }
       ).records;
 
@@ -33,15 +42,18 @@ const LabResults = () => {
 
       // Decrypt recordDetails
       let decryptedRecords = filteredRecords
-        .map((record) => {
-          return decryptData(record.recordDetails, "record");
-        })
+        .map((record) => ({
+          data: decryptData(record.recordDetails, "record"),
+          hash: record.recordHash,
+          addedBy: record.addedBy,
+          patientAddress: "",
+          patientName: "",
+        }))
         .reverse();
 
       console.log(decryptedRecords);
 
       setLabResults(decryptedRecords);
-      setLabResultsHash(filteredRecords.map((record) => record.recordHash));
       // console.log(medicalRecordsHash);
     }
   }, [connection, wallet]);
@@ -73,12 +85,7 @@ const LabResults = () => {
     <div>
       <div className="font-semibold text-xl mb-4">Lab Results</div>
       {labResults.map((record, index) => (
-        <LabResultItem
-          key={index}
-          record={record}
-          recordHash={labResultsHash[index]}
-          sameDoctor={false}
-        />
+        <LabResultItem key={index} record={record} sameDoctor={false} />
       ))}
 
       {labResults?.length === 0 && (
