@@ -8,6 +8,8 @@ interface MedicationRecord {
   recordHash: string;
   time: string;
   addedBy: string;
+  patientName: string;
+  patientAddress: string;
 }
 
 const Medication = ({

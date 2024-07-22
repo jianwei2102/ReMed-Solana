@@ -1,5 +1,6 @@
 import { Button } from "antd";
 import { MedicationCard } from "../";
+import { Link } from "react-router-dom";
 
 interface MedicationItemProps {
   medication: {
@@ -13,6 +14,8 @@ interface MedicationItemProps {
     date: string;
     time: string;
     location: string;
+    patientName: string;
+    patientAddress: string;
   };
   recordHash: string;
   sameDoctor: boolean;
@@ -23,18 +26,30 @@ const MedicationItem = ({
   recordHash,
   sameDoctor,
 }: MedicationItemProps) => {
+  const dataToPass = {
+    type: "medication",
+    recordHash: recordHash,
+    patientName: medication.patientName,
+    patientAddress: medication.patientAddress,
+    record: medication,
+  };
+
   return (
     <div className={`border rounded-lg p-4 mb-4`}>
       <div className="grid grid-cols-4">
         <div className="flex col-span-3">
-          <span className="font-semibold">Dispensed by: </span>
-          {`${medication.location}, ${medication.date}, ${medication.time}`}
+          <p className="font-semibold">Dispensed by: </p>
+          <p className="truncate pl-4">
+            {`${medication.location}, ${medication.date}, ${medication.time}`}
+          </p>
         </div>
         <div className="flex flex-row-reverse row-span-2">
           {sameDoctor && (
-            <Button type="primary" className="mr-2 ">
-              Modify Record
-            </Button>
+            <Link to={"/doctor/modifyRecord"} state={dataToPass}>
+              <Button type="primary" className="mr-2 ">
+                Modify Record
+              </Button>
+            </Link>
           )}
         </div>
         <div className="flex col-span-3">

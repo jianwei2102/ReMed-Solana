@@ -31,6 +31,7 @@ interface ProcessedRecord {
   recordHash: string;
   addedBy: string;
   patientName: string;
+  patientAddress: string;
 }
 
 interface CategorizedRecords {
