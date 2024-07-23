@@ -45,6 +45,7 @@ const Authorization = () => {
   const [requested, setRequested] = useState<RequestedDoctor[]>([]);
   const [authorized, setAuthorized] = useState<AuthorizedDoctor[]>([]);
   const [segmentedValue, setSegmentedValue] = useState<string>("View All");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const getAuthDoctor = useCallback(async () => {
     if (connection && wallet) {
@@ -238,14 +239,22 @@ const Authorization = () => {
     }
   };
 
+  const filteredAuthorized = authorized.filter((item) =>
+    item.address.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredRequested = requested.filter((item) =>
+    item.address.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const displayData = () => {
     if (segmentedValue === "View All") {
       return (
         <>
-          {authorized.length > 0 && (
+          {filteredAuthorized.length > 0 && (
             <>
               <div className="text-lg font-semibold">Authorized Doctors</div>
-              {authorized.map((item, index) => (
+              {filteredAuthorized.map((item, index) => (
                 <DoctorAuthorized
                   key={index}
                   doctorDetails={
@@ -256,10 +265,10 @@ const Authorization = () => {
               ))}
             </>
           )}
-          {requested.length > 0 && (
+          {filteredRequested.length > 0 && (
             <>
               <div className="text-lg font-semibold">Pending Requests</div>
-              {requested.map((item) => (
+              {filteredRequested.map((item) => (
                 <DoctorRequested
                   key={item.id}
                   doctorDetails={item}
@@ -269,18 +278,19 @@ const Authorization = () => {
               ))}
             </>
           )}
-          {authorized.length === 0 && requested.length === 0 && (
-            <div className="text-center py-4 text-lg text-gray-500">
-              No doctors found
-            </div>
-          )}
+          {filteredAuthorized.length === 0 &&
+            filteredRequested.length === 0 && (
+              <div className="text-center py-4 text-lg text-gray-500">
+                No doctors found
+              </div>
+            )}
         </>
       );
     }
 
     if (segmentedValue === "Authorized") {
-      return authorized.length > 0 ? (
-        authorized.map((item, index) => (
+      return filteredAuthorized.length > 0 ? (
+        filteredAuthorized.map((item, index) => (
           <DoctorAuthorized
             key={index}
             doctorDetails={item as unknown as { address: string; date: string }}
@@ -295,8 +305,8 @@ const Authorization = () => {
     }
 
     if (segmentedValue === "Pending") {
-      return requested.length > 0 ? (
-        requested.map((item) => (
+      return filteredRequested.length > 0 ? (
+        filteredRequested.map((item) => (
           <DoctorRequested
             key={item.id}
             doctorDetails={item}
@@ -372,7 +382,12 @@ const Authorization = () => {
         />
 
         <Flex gap="small">
-          <Input placeholder="Search" prefix={<SearchOutlined />} />
+          <Input
+            placeholder="Search"
+            prefix={<SearchOutlined />}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <Button icon={<FilterOutlined />}>Filter</Button>
         </Flex>
       </Space>

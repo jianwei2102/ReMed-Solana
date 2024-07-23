@@ -1,5 +1,6 @@
 import { Wallet } from "@project-serum/anchor";
 import { useNavigate } from "react-router-dom";
+import { closeAllAccounts } from "../utils/util";
 import { useCallback, useEffect, useState } from "react";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
@@ -12,6 +13,8 @@ import {
   Row,
   Col,
   Typography,
+  Modal,
+  message,
 } from "antd";
 
 const { Option } = Select;
@@ -45,6 +48,27 @@ const Settings = () => {
       language,
       darkMode,
       twoFactorAuth,
+    });
+  };
+
+  const handleDeleteAccount = () => {
+    Modal.confirm({
+      title: "Are you sure you want to delete your account?",
+      content: "This action cannot be undone.",
+      onOk: async () => {
+        try {
+          let response = await closeAllAccounts(connection, wallet);
+
+          if (response.status === "success") {
+            message.success("Account deleted successfully.");
+            navigate(0); // Redirect to the homepage or another appropriate page
+          }
+        } catch (error) {
+          message.error("Failed to delete account.");
+        }
+      },
+      okText: "Yes, delete",
+      cancelText: "Cancel",
     });
   };
 
@@ -137,12 +161,18 @@ const Settings = () => {
             </Form.Item>
           </Col>
         </Row>
-
-        <Divider />
-
         <Form.Item>
           <Button type="primary" onClick={handleSave}>
             Save Settings
+          </Button>
+        </Form.Item>
+
+        <Divider />
+
+        <Title level={4}>Account Management</Title>
+        <Form.Item>
+          <Button danger onClick={handleDeleteAccount}>
+            DELETE ACCOUNT
           </Button>
         </Form.Item>
       </Form>

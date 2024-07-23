@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import idl from "../assets/remed.json";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
 
 const programID = new PublicKey(idl.metadata.address);
@@ -488,6 +488,126 @@ const processRecords = (decryptedRecords: string[]): any[] => {
     });
 };
 
+const getProgramAddress = async (seeds: Buffer[], programId: PublicKey) => {
+  return await PublicKey.findProgramAddress(seeds, programId);
+};
+
+const closeAccount = async (
+  connection: Connection,
+  wallet: Wallet,
+  seeds: Buffer[],
+  accountType: string
+) => {
+  try {
+    const anchorProvider = getProvider(connection, wallet);
+    const program = new Program(idl as Idl, programID, anchorProvider);
+    const [accountPubkey] = await getProgramAddress(seeds, program.programId);
+
+    if (!(await isAccountInitialized(connection, accountPubkey))) {
+      console.log(
+        `${accountType} account is not initialized. Skipping closure.`
+      );
+      return {
+        status: "error",
+        data: `${accountType} account is not initialized.`,
+      };
+    }
+
+    if (accountType === "profile") {
+      await program.methods
+        .closeProfile()
+        .accounts({
+          profile: accountPubkey,
+          signer: anchorProvider.wallet.publicKey,
+        })
+        .signers([])
+        .rpc();
+    } else if (accountType === "patientAuthList") {
+      await program.methods
+        .closePatientAuthList()
+        .accounts({
+          patientAuthList: accountPubkey,
+          signer: anchorProvider.wallet.publicKey,
+        })
+        .signers([])
+        .rpc();
+    } else if (accountType === "emrList") {
+      await program.methods
+        .closeEMRList()
+        .accounts({
+          emrList: accountPubkey,
+          signer: anchorProvider.wallet.publicKey,
+        })
+        .signers([])
+        .rpc();
+    } else {
+      return { status: "error", data: "Unknown account type." };
+    }
+
+    console.log(
+      `${anchorProvider.wallet.publicKey.toBase58()} ${accountType} account closed.`
+    );
+    return { status: "success", data: "" };
+  } catch (error) {
+    console.error(`Error closing ${accountType} account:`, error);
+    return { status: "error", data: error };
+  }
+};
+
+const isAccountInitialized = async (
+  connection: Connection,
+  accountPubkey: PublicKey
+) => {
+  try {
+    const accountInfo = await connection.getAccountInfo(accountPubkey);
+    return accountInfo !== null;
+  } catch (error) {
+    console.error(
+      `Error fetching account info for ${accountPubkey.toBase58()}:`,
+      error
+    );
+    return false;
+  }
+};
+
+const closeProfileAccount = (connection: Connection, wallet: Wallet) =>
+  closeAccount(
+    connection,
+    wallet,
+    [Buffer.from("profile"), wallet.publicKey.toBuffer()],
+    "profile"
+  );
+
+const closePatientAuthListAccount = (connection: Connection, wallet: Wallet) =>
+  closeAccount(
+    connection,
+    wallet,
+    [Buffer.from("patient_auth_list"), wallet.publicKey.toBuffer()],
+    "patientAuthList"
+  );
+
+const closeEMRListAccount = (connection: Connection, wallet: Wallet) =>
+  closeAccount(
+    connection,
+    wallet,
+    [Buffer.from("emr_list"), wallet.publicKey.toBuffer()],
+    "emrList"
+  );
+
+const closeAllAccounts = async (connection: Connection, wallet: Wallet) => {
+  try {
+    await closeProfileAccount(connection, wallet);
+    await closePatientAuthListAccount(connection, wallet);
+    await closeEMRListAccount(connection, wallet);
+
+    console.log("Account closure process completed.");
+    return { status: "success", data: "" };
+  } catch (error) {
+    console.error("Error closing accounts:", error);
+    return { status: "error", data: error };
+  }
+};
+
 export {
   getProvider,
   createProfile,
@@ -503,4 +623,5 @@ export {
   modifyRecord,
   fetchRecord,
   processRecords,
+  closeAllAccounts,
 };

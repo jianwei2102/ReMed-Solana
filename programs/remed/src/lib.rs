@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("7dB64fVpLmvmNWMgjNknDfeJvzovRauQfAc1uGsGgjdH");
+declare_id!("Dkmv6cMkyd7riJv6LSqvwDbdsNLNpfEsBwG7X1kZQ2Qz");
 
 #[program]
 pub mod remed {
@@ -170,6 +170,18 @@ pub mod remed {
             return Err(ErrorCode::RecordNotFound.into()); // Error code for record not found
         }
     }    
+
+    pub fn close_profile(_ctx: Context<CloseProfile>) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn close_patient_auth_list(_ctx: Context<ClosePatientAuthList>) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn close_emr_list(_ctx: Context<CloseEMRList>) -> Result<()> {
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -244,6 +256,30 @@ pub struct ModifyRecord<'info> {
     /// CHECK: This is safe because we are only reading the `patient` account information, and it is not being mutated.
     pub patient: AccountInfo<'info>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct CloseProfile<'info> {
+    #[account(mut, close = signer, seeds = [b"profile", signer.key().as_ref()], bump)]
+    pub profile: Account<'info, Profile>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct ClosePatientAuthList<'info> {
+    #[account(mut, close = signer, seeds = [b"patient_auth_list", signer.key().as_ref()], bump)]
+    pub patient_auth_list: Account<'info, AuthList>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct CloseEMRList<'info> {
+    #[account(mut, close = signer, seeds = [b"patient_auth_list", signer.key().as_ref()], bump)]
+    pub emr_list: Account<'info, EMRList>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
 }
 
 #[account]

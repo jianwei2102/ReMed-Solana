@@ -278,7 +278,7 @@ const MedicalRecord = () => {
                   },
                 ]}
               >
-                <DatePicker style={{ width: "40%" }} />
+                <DatePicker style={{ width: "40%" }} maxDate={dayjs()} />
               </Form.Item>
               <Form.Item
                 name={"time"}

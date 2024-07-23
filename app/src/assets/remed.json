@@ -231,6 +231,54 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "name": "closeProfile",
+      "accounts": [
+        {
+          "name": "profile",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "closePatientAuthList",
+      "accounts": [
+        {
+          "name": "patientAuthList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "closeEmrList",
+      "accounts": [
+        {
+          "name": "emrList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -358,6 +406,6 @@
     }
   ],
   "metadata": {
-    "address": "7dB64fVpLmvmNWMgjNknDfeJvzovRauQfAc1uGsGgjdH"
+    "address": "Dkmv6cMkyd7riJv6LSqvwDbdsNLNpfEsBwG7X1kZQ2Qz"
   }
 }

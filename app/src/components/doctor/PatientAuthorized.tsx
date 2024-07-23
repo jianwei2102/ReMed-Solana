@@ -93,7 +93,9 @@ const PatientAuthorized = ({
           "profile"
         );
         setProfile(JSON.parse(decryptedProfile));
-        // console.log(JSON.parse(decryptedProfile));
+      } else {
+        // Handle profile not found case
+        setProfile(undefined);
       }
     };
 
@@ -119,6 +121,7 @@ const PatientAuthorized = ({
       });
     }
   };
+
   return (
     <>
       <Row className="border mb-4 py-4 rounded-lg">
@@ -127,17 +130,21 @@ const PatientAuthorized = ({
           <Avatar
             size={64}
             icon={
-              <Image
-                src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.patient.image}/`}
-                alt="Avatar Image"
-              />
+              profile?.patient ? (
+                <Image
+                  src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.patient.image}/`}
+                  alt="Avatar Image"
+                />
+              ) : undefined
             }
             className="mr-2"
           />
         </Col>
         <Col span={14} className="flex flex-col justify-center items-start">
-          <span className="font-semibold text-lg">{profile?.patient.name}</span>
-          Contact: {profile?.patient.phoneNo}
+          <span className="font-semibold text-lg">
+            {profile?.patient ? profile?.patient.name : "Profile not found"}
+          </span>
+          Contact: {profile?.patient ? profile?.patient.phoneNo : "N/A"}
           <div className="flex items-center justify-center">
             <FaStar color="blue" size={12} className="mr-1" />
             4.5 <span className="text-gray-500">(21)</span>
@@ -177,157 +184,170 @@ const PatientAuthorized = ({
         open={open}
       >
         <div className="text-xl mb-6 italic">Patient Profile</div>
-        <div className="mb-4 text-lg font-semibold">
-          <Avatar
-            size={32}
-            icon={
-              <Image
-                src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.patient.image}/`}
-                alt="Avatar Image"
+        {profile ? (
+          <>
+            <div className="mb-4 text-lg font-semibold">
+              <Avatar
+                size={32}
+                icon={
+                  <Image
+                    src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.patient.image}/`}
+                    alt="Avatar Image"
+                  />
+                }
+                className="mr-2"
               />
-            }
-            className="mr-2"
-          />
-          Patient
-        </div>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem
-              title="Full Name"
-              content={profile?.patient.name}
-            />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Gender" content={profile?.patient.gender} />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem
-              title="Blood Group"
-              content={profile?.patient.bloodGroup}
-            />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem
-              title="Date Of Birth"
-              content={profile?.patient.dateOfBirth}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem
-              title="Phone No."
-              content={profile?.patient.phoneNo}
-            />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem
-              title="Address"
-              content={profile?.patient.address}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <DescriptionItem
-              title="Authorized Date"
-              content={patientDetails.date}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <DescriptionItem
-              title="Account Address"
-              content={patientDetails.address}
-            />
-          </Col>
-        </Row>
-        <Divider />
-        <div className="mb-4 text-lg font-semibold">
-          <Avatar
-            size={32}
-            icon={
-              <Image
-                src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.nextOfKin.image}/`}
-                alt="Avatar Image"
+              Patient
+            </div>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Full Name"
+                  content={profile?.patient.name}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Gender"
+                  content={profile?.patient.gender}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Blood Group"
+                  content={profile?.patient.bloodGroup}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Date Of Birth"
+                  content={profile?.patient.dateOfBirth}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Phone No."
+                  content={profile?.patient.phoneNo}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Address"
+                  content={profile?.patient.address}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                <DescriptionItem
+                  title="Authorized Date"
+                  content={patientDetails.date}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                <DescriptionItem
+                  title="Account Address"
+                  content={patientDetails.address}
+                />
+              </Col>
+            </Row>
+            <Divider />
+            <div className="mb-4 text-lg font-semibold">
+              <Avatar
+                size={32}
+                icon={
+                  <Image
+                    src={`https://${process.env.REACT_APP_ThirdWeb_Client_ID}.ipfscdn.io/ipfs/${profile?.nextOfKin.image}/`}
+                    alt="Avatar Image"
+                  />
+                }
+                className="mr-2"
               />
-            }
-            className="mr-2"
-          />
-          Next of Kin
-        </div>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem
-              title="Full Name"
-              content={profile?.nextOfKin.name}
-            />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem
-              title="Gender"
-              content={profile?.nextOfKin.gender}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem
-              title="Relationship"
-              content={profile?.nextOfKin.relationship}
-            />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem
-              title="Date of Birth"
-              content={profile?.nextOfKin.dateOfBirth}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem
-              title="Phone No."
-              content={profile?.nextOfKin.phoneNo}
-            />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem
-              title="Address"
-              content={profile?.nextOfKin.address}
-            />
-          </Col>
-        </Row>
-        <Divider />
-        <Row>
-          <Col span={24} className="flex items-center justify-center ">
-            <Link
-              to={"/doctor/viewRecord"}
-              state={{
-                address: patientDetails.address,
-                name: profile?.patient.name,
-              }}
-            >
-              <Button size="large">View Record</Button>
-            </Link>
-          </Col>
-        </Row>
-        <Row className="mt-4">
-          <Col span={24} className="flex items-center justify-center">
-            <Link
-              to={"/doctor/appendRecord"}
-              state={{
-                address: patientDetails.address,
-                name: profile?.patient.name,
-              }}
-            >
-              <Button size="large">Append Record</Button>
-            </Link>
-          </Col>
-        </Row>
+              Next of Kin
+            </div>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Full Name"
+                  content={profile?.nextOfKin.name}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Gender"
+                  content={profile?.nextOfKin.gender}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Relationship"
+                  content={profile?.nextOfKin.relationship}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Date of Birth"
+                  content={profile?.nextOfKin.dateOfBirth}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Phone No."
+                  content={profile?.nextOfKin.phoneNo}
+                />
+              </Col>
+              <Col span={12}>
+                <DescriptionItem
+                  title="Address"
+                  content={profile?.nextOfKin.address}
+                />
+              </Col>
+            </Row>
+            <Divider />
+            <Row>
+              <Col span={24} className="flex items-center justify-center ">
+                <Link
+                  to={"/doctor/viewRecord"}
+                  state={{
+                    address: patientDetails.address,
+                    name: profile?.patient.name,
+                  }}
+                >
+                  <Button size="large">View Record</Button>
+                </Link>
+              </Col>
+            </Row>
+            <Row className="mt-4">
+              <Col span={24} className="flex items-center justify-center">
+                <Link
+                  to={"/doctor/appendRecord"}
+                  state={{
+                    address: patientDetails.address,
+                    name: profile?.patient.name,
+                  }}
+                >
+                  <Button size="large">Append Record</Button>
+                </Link>
+              </Col>
+            </Row>
+          </>
+        ) : (
+          <div className="text-red-500 text-lg">
+            Profile not found. Please revoke the authorization. <br />
+            Account:
+            {patientDetails.address}
+          </div>
+        )}
       </Drawer>
     </>
   );

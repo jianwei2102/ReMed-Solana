@@ -9,7 +9,7 @@ import { LiaFileMedicalAltSolid } from "react-icons/lia";
 import { fetchProfile, decryptData } from "../utils/util";
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState, useMemo } from "react";
-import { MdOutlineNotificationsActive } from "react-icons/md";
+// import { MdOutlineNotificationsActive } from "react-icons/md";
 import { PiUserCheck, PiTestTubeDuotone } from "react-icons/pi";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
@@ -100,12 +100,12 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         label: "Settings",
         onClick: () => navigate("/settings"),
       },
-      {
-        key: "/notification",
-        icon: <MdOutlineNotificationsActive size={18} />,
-        label: "Notification",
-        onClick: () => navigate("/notification"),
-      },
+      // {
+      //   key: "/notification",
+      //   icon: <MdOutlineNotificationsActive size={18} />,
+      //   label: "Notification",
+      //   onClick: () => navigate("/notification"),
+      // },
     ];
   }, [navigate]);
 
@@ -156,12 +156,12 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
         label: "Settings",
         onClick: () => navigate("/settings"),
       },
-      {
-        key: "/notification",
-        icon: <MdOutlineNotificationsActive size={18} />,
-        label: "Notification",
-        onClick: () => navigate("/notification"),
-      },
+      // {
+      //   key: "/notification",
+      //   icon: <MdOutlineNotificationsActive size={18} />,
+      //   label: "Notification",
+      //   onClick: () => navigate("/notification"),
+      // },
     ];
   }, [navigate, location.pathname]);
 

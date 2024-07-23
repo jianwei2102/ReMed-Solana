@@ -1,4 +1,5 @@
 import axios from "axios";
+import dayjs from "dayjs";
 import { useState } from "react";
 import { format } from "date-fns";
 import { FaInfo } from "react-icons/fa";
@@ -193,7 +194,7 @@ const PatientRegister = () => {
               },
             ]}
           >
-            <DatePicker style={{ width: "95%" }} />
+            <DatePicker style={{ width: "95%" }} maxDate={dayjs()} />
           </Form.Item>
           <Form.Item
             name={["patient", "phoneNo"]} // Nested field for patient phone number
@@ -324,7 +325,7 @@ const PatientRegister = () => {
               },
             ]}
           >
-            <DatePicker style={{ width: "95%" }} />
+            <DatePicker style={{ width: "95%" }} maxDate={dayjs()} />
           </Form.Item>
           <Form.Item
             name={["nextOfKin", "phoneNo"]} // Nested field for next of kin phone number
