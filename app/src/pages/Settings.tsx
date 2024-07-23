@@ -1,6 +1,6 @@
 import { Wallet } from "@project-serum/anchor";
 import { useNavigate } from "react-router-dom";
-import { closeAllAccounts } from "../utils/util";
+import { closeAllAccounts, fetchProfile } from "../utils/util";
 import { useCallback, useEffect, useState } from "react";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
@@ -16,6 +16,7 @@ import {
   Modal,
   message,
 } from "antd";
+import { set } from "@project-serum/anchor/dist/cjs/utils/features";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -25,10 +26,24 @@ const Settings = () => {
   const { connection } = useConnection();
   const wallet = useAnchorWallet() as Wallet;
 
+  const [role, setRole] = useState("Patient");
+
   const checkAuthority = useCallback(async () => {
     if (!connection || !wallet) {
       navigate("/");
       return;
+    }
+
+    let response = await fetchProfile(connection, wallet);
+    if (response.status === "success") {
+      const role = (response.data as { role: string }).role;
+      if (role === "patient") {
+        setRole("Patient");
+      } else if (role === "doctor") {
+        setRole("Doctor");
+      }
+    } else {
+      navigate("/");
     }
   }, [connection, wallet, navigate]);
 
@@ -166,15 +181,18 @@ const Settings = () => {
             Save Settings
           </Button>
         </Form.Item>
+        {role === "Patient" && (
+          <>
+            <Divider />
 
-        <Divider />
-
-        <Title level={4}>Account Management</Title>
-        <Form.Item>
-          <Button danger onClick={handleDeleteAccount}>
-            DELETE ACCOUNT
-          </Button>
-        </Form.Item>
+            <Title level={4}>Account Management</Title>
+            <Form.Item>
+              <Button danger onClick={handleDeleteAccount}>
+                DELETE ACCOUNT
+              </Button>
+            </Form.Item>
+          </>
+        )}
       </Form>
     </Card>
   );
