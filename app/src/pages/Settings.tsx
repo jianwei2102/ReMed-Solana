@@ -16,7 +16,6 @@ import {
   Modal,
   message,
 } from "antd";
-import { set } from "@project-serum/anchor/dist/cjs/utils/features";
 
 const { Option } = Select;
 const { Title } = Typography;
