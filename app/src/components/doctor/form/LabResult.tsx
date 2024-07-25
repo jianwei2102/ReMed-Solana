@@ -126,7 +126,7 @@ const LabResult = () => {
       </div>
       <Radio.Group value={labType} onChange={(e) => setLabType(e.target.value)}>
         <Radio.Button value="Vital Signs">Vital Signs</Radio.Button>
-        <Radio.Button value="Blood Count">Blood Count</Radio.Button>
+        <Radio.Button value="Blood Test">Blood Test</Radio.Button>
         <Radio.Button value="X-Ray">X-Ray</Radio.Button>
       </Radio.Group>
       <Form
@@ -137,7 +137,7 @@ const LabResult = () => {
         onFinish={onFinish}
       >
         {labType === "Vital Signs" && <VitalSign />}
-        {labType === "Blood Count" && <BloodCount />}
+        {labType === "Blood Test" && <BloodCount />}
         {labType === "X-Ray" && (
           <XRay fileList={fileList} setFileList={setFileList} />
         )}

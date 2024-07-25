@@ -41,7 +41,7 @@ const LabResult = () => {
         heartRate: initialData.heartRate,
         bodyTemperature: initialData.bodyTemperature,
       });
-    } else if (initialLabType === "Blood Count") {
+    } else if (initialLabType === "Blood Test") {
       form.setFieldsValue({
         whiteBloodCells: initialData.whiteBloodCells,
         redBloodCells: initialData.redBloodCells,
@@ -176,8 +176,8 @@ const LabResult = () => {
         <Radio.Button value="Vital Signs" disabled={labType !== "Vital Signs"}>
           Vital Signs
         </Radio.Button>
-        <Radio.Button value="Blood Count" disabled={labType !== "Blood Count"}>
-          Blood Count
+        <Radio.Button value="Blood Test" disabled={labType !== "Blood Test"}>
+          Blood Test
         </Radio.Button>
         <Radio.Button value="X-Ray" disabled={labType !== "X-Ray"}>
           X-Ray
@@ -191,7 +191,7 @@ const LabResult = () => {
         onFinish={onFinish}
       >
         {labType === "Vital Signs" && <VitalSign />}
-        {labType === "Blood Count" && <BloodCount />}
+        {labType === "Blood Test" && <BloodCount />}
         {labType === "X-Ray" && (
           <XRay fileList={fileList} setFileList={setFileList} />
         )}

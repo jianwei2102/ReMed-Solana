@@ -142,7 +142,7 @@ const DoctorRequested = ({
             block
             onClick={revokeDoctorFunc}
           >
-            Revoke
+            Remove
           </Button>
         </Col>
       </Row>

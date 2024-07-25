@@ -73,7 +73,7 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
       {
         key: "/medicalRecord",
         icon: <EcgIcon />,
-        label: "Medical Record",
+        label: "Medical Records",
         onClick: () => navigate("/medicalRecord"),
       },
       {
@@ -123,7 +123,7 @@ const MenuList = ({ darkTheme }: MenuListProps) => {
       {
         key: "/doctor/authorization",
         icon: <PiUserCheck size={18} />,
-        label: "Authorized",
+        label: "Auth Patient",
         onClick: () => navigate("/doctor/authorization"),
       },
       {

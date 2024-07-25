@@ -65,7 +65,7 @@ const LabResultItem = ({ record, sameDoctor }: LabResultItemProps) => {
             children: `${parsedRecord.bodyTemperature}°C`,
           },
         ];
-      case "Blood Count":
+      case "Blood Test":
         return [
           {
             key: "1",
@@ -193,11 +193,11 @@ const LabResultItem = ({ record, sameDoctor }: LabResultItemProps) => {
         <Descriptions
           className="bg-[#D2DDEA] rounded-lg px-4 pt-2 mt-2 col-span-4"
           items={getDescriptionItems(type)}
-          column={type === "Vital Signs" ? 3 : type === "Blood Count" ? 2 : 1}
+          column={type === "Vital Signs" ? 3 : type === "Blood Test" ? 2 : 1}
           layout="vertical"
           labelStyle={{ fontWeight: "700" }}
         />
-        {type === "Blood Count" && (
+        {type === "Blood Test" && (
           <div>
             <div className="font-semibold">Report</div>
             <div className="text-[#FC5488]">
