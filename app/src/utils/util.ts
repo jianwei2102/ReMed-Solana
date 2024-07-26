@@ -6,7 +6,7 @@ import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
 const programID = new PublicKey(idl.metadata.address);
 const CryptoJS = require("crypto-js");
 
-const getProvider = (connection: any, wallet: Wallet) => {
+const getProvider = (connection: Connection, wallet: Wallet) => {
   if (!wallet) {
     throw new Error("Wallet is not connected");
   }
@@ -19,13 +19,13 @@ const getProvider = (connection: any, wallet: Wallet) => {
 };
 
 const createProfile = async (
-  connection: any,
+  connection: Connection,
   wallet: Wallet,
   role: String,
   personalDetails: String
 ) => {
   try {
-    // Encrypt the message using the key
+    // Encrypt the message using the AES key
     const encryptedPersonalDetails = encryptData(personalDetails, "profile");
     console.log(encryptedPersonalDetails);
 
@@ -56,7 +56,7 @@ const createProfile = async (
   }
 };
 
-const fetchProfile = async (connection: any, wallet: Wallet) => {
+const fetchProfile = async (connection: Connection, wallet: Wallet) => {
   try {
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
@@ -116,7 +116,7 @@ const decryptData = (data: String, dataType: String) => {
 };
 
 const authorizeDoctor = async (
-  connection: any,
+  connection: Connection,
   wallet: Wallet,
   doctorAddress: string
 ) => {
@@ -161,7 +161,7 @@ const authorizeDoctor = async (
 };
 
 const revokeDoctor = async (
-  connection: any,
+  connection: Connection,
   wallet: Wallet,
   doctorAddress: string
 ) => {
@@ -206,7 +206,7 @@ const revokeDoctor = async (
 };
 
 const revokePatient = async (
-  connection: any,
+  connection: Connection,
   wallet: Wallet,
   patientAddress: string
 ) => {
@@ -253,7 +253,7 @@ const revokePatient = async (
   }
 };
 
-const fetchAuthDoctor = async (connection: any, wallet: Wallet) => {
+const fetchAuthDoctor = async (connection: Connection, wallet: Wallet) => {
   try {
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
@@ -276,7 +276,7 @@ const fetchAuthDoctor = async (connection: any, wallet: Wallet) => {
   }
 };
 
-const fetchAuthPatient = async (connection: any, wallet: Wallet) => {
+const fetchAuthPatient = async (connection: Connection, wallet: Wallet) => {
   try {
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
@@ -312,7 +312,7 @@ const generateHash = (
 };
 
 const appendRecord = async (
-  connection: any,
+  connection: Connection,
   wallet: Wallet,
   recordHash: string,
   record: string,
@@ -363,7 +363,7 @@ const appendRecord = async (
 };
 
 const modifyRecord = async (
-  connection: any,
+  connection: Connection,
   wallet: Wallet,
   currentRecordHash: string,
   newRecordHash: string,
@@ -415,7 +415,7 @@ const modifyRecord = async (
   }
 };
 
-const fetchRecord = async (connection: any, wallet: Wallet) => {
+const fetchRecord = async (connection: Connection, wallet: Wallet) => {
   try {
     const anchorProvider = getProvider(connection, wallet);
     const program = new Program(idl as Idl, programID, anchorProvider);
