@@ -121,7 +121,7 @@ const PatientRequested = ({
             block
             onClick={revokePatientFunc} // Trigger revoke function
           >
-            Revoke
+            Remove
           </Button>
         </Col>
       </Row>

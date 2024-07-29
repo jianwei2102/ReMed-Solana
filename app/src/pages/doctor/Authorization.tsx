@@ -210,12 +210,12 @@ const Authorization = () => {
       setRequested((prev) => prev.filter((item) => item.id !== patientId));
       messageApi.open({
         type: "success",
-        content: "Patient revoked successfully",
+        content: "Patient request remove successfully",
       });
     } catch (error) {
       messageApi.open({
         type: "error",
-        content: "Error revoking patient request",
+        content: "Error remove patient request",
       });
     }
   };

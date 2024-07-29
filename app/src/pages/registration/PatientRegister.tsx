@@ -270,7 +270,7 @@ const PatientRegister = () => {
           </Form.Item>
           <Form.Item
             name={["nextOfKin", "name"]} // Nested field for next of kin name
-            label="Next of Kin Name"
+            label="Full Name"
             required
             rules={[
               {

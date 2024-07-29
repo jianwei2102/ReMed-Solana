@@ -173,7 +173,7 @@ const DoctorRegister = () => {
             rules={[
               {
                 required: true,
-                message: "Please input the doctor's specialization!",
+                message: "Please select the doctor's specialization!",
               },
             ]}
           >
@@ -319,7 +319,7 @@ const DoctorRegister = () => {
             rules={[
               {
                 required: true,
-                message: "Please input the languages the doctor can speak!",
+                message: "Please select or input the languages the doctor can speak!",
               },
             ]}
           >
