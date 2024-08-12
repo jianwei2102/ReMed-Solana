@@ -109,7 +109,7 @@ const PatientRegister = () => {
     await axios.post("http://localhost:4000/users", {
       username: formattedValues.patient.name,
       address: wallet.publicKey.toBase58(),
-      role: "doctor",
+      role: "patient",
     });
 
     messageApi.destroy();

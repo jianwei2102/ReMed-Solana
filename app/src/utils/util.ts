@@ -305,9 +305,10 @@ const generateHash = (
   doctorPubKey: String
 ) => {
   const combinedString = `${recordData}-${patientPubKey}-${doctorPubKey}`;
-
+  console.log("Before Hash", combinedString);
   // Create SHA-256 hash
   const hash = CryptoJS.SHA256(combinedString).toString(CryptoJS.enc.Hex);
+  console.log("After Hash", hash);
   return hash;
 };
 
