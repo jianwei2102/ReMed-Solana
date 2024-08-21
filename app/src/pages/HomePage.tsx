@@ -5,7 +5,7 @@ import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { Welcoming, UserRegister, PatientDashboard, DoctorDashboard } from "./";
 
 const HomePage = () => {
-  let [page, setPage] = useState("Patient");
+  let [page, setPage] = useState("Welcoming");
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
 
