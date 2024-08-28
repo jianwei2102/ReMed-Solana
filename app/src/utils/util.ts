@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import idl from "../assets/remed.json";
+import idl from "../../../target/idl/remed.json";
 import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
 
