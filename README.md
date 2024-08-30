@@ -4,15 +4,15 @@ To clone the project
 **FrontEnd**
 cd app -> yarn install -> yarn start
 
-**BackEnd**
+**BackEnd** : 
 cd db -> node index.js
 
-**SolanaProgram(Devnet)**
+**SolanaProgram(Devnet)** : 
 anchor build -> anchor deploy
 paste the program ID to lib.rs & Anchor.toml
 build and deply again 
 
-**ENV**
+**ENV** : 
 create AES Key and Thirdweb Key
 
 * Main features
