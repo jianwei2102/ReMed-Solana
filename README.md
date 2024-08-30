@@ -1,4 +1,4 @@
-* ReMed redefine how Medical Records management in Solana Blockchain.
+** ReMed redefine how Medical Records management in Solana Blockchain.
 
 To clone the project 
 **FrontEnd**
@@ -15,7 +15,7 @@ build and deply again
 **ENV** : 
 create AES Key and Thirdweb Key
 
-* Main features
+** Main features
 A decentralized permission based EMR management system for healthcare providers and patients.
 1. Enhanced Data Security
 Centralized EMR systems are vulnerable to breaches and unauthorized access. Our platform leverages blockchain technology to create a decentralized ledger of medical records. This ensures that patient data is securely stored and immutable, greatly reducing the risk of data breaches and unauthorized alterations.
