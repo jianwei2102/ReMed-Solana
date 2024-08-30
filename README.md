@@ -1,5 +1,7 @@
 ** ReMed redefine how Medical Records management in Solana Blockchain.
 
+
+
 To clone the project 
 **FrontEnd**
 cd app -> yarn install -> yarn start
@@ -14,6 +16,9 @@ build and deply again
 
 **ENV** : 
 create AES Key and Thirdweb Key
+
+
+
 
 ** Main features
 A decentralized permission based EMR management system for healthcare providers and patients.
